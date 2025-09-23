@@ -1,0 +1,16 @@
+.signOffContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 1rem;
+    padding: 1rem;
+    background-color: rgb(240, 240, 240);
+    border-radius: 8px;
+    gap: 1rem;
+}
+
+.signOffEntry {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

@@ -1,0 +1,38 @@
+.formContentContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.smallField {
+    display: flex;
+    width: fit-content;
+}   
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.rowEntry {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    gap: 1rem;
+
+}
+
+@media (max-width: 760px) {
+  .row {
+    flex-direction: column;  
+    flex-wrap: nowrap;        
+  }
+  .rowEntry {
+    width: 100%;
+  }
+
+}
