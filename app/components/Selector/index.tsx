@@ -8,7 +8,34 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-const Selector = () => {
+import type { UtilityMeeter } from "~/pages/skaititajiPage";
+export const mockUtilityMeeter: UtilityMeeter = {
+  id: "CH123456",
+  adress: "Pirma iela 37",
+  city: "Koceni",
+  details: {
+    action: "Pārbaude",
+    radijums: "5",
+    iemesls: "Regulāra pārbaude",
+    novietojums: "Horizontāli",
+    atrodas: "Ēka",
+    kanalizacija: "Neatkarīgais skaitītājs",
+    ipasums: "KKS Īpašums",
+    installed: ["Filtrs", "Pretvārsts"],
+    tips: "Komercskaitītājs",
+    plombaNr: "PL12345",
+    marka: "MarkaX",
+    diametrs: "15",
+    garums: "20",
+    skaititajaTips: "Mehāniskais",
+    piezimes: "Viss kārtībā",
+    verifiedDate: new Date("2025-01-15"),
+  },
+};
+interface SelectorProps {
+  setUtilityMeeter: (fetchedUtilityMeeter: UtilityMeeter) => void;
+}
+const Selector = ({ setUtilityMeeter }: SelectorProps) => {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedAdress, setSelectedAdress] = useState<string | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<string | null>(
@@ -23,7 +50,9 @@ const Selector = () => {
   };
   const handleSelectedCompoent = (component: string | null) => {
     setSelectedComponent(component);
+    setUtilityMeeter(mockUtilityMeeter);
   };
+
   return (
     <div className={styles.selectorContainer}>
       <div className={styles.selectorHalf}>
