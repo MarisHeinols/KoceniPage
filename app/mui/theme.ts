@@ -1,11 +1,17 @@
 import { createTheme } from '@mui/material/styles';
 
 // Create a custom theme
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    nav: true; 
+  }
+}
+
 const theme = createTheme({
 	palette: {
 		mode: 'light', // or 'dark'
 		primary: {
-			main: '#1976d2', // your brand color
+			main: '#4caf50', // your brand color
 		},
 		secondary: {
 			main: '#9c27b0',
@@ -26,13 +32,57 @@ const theme = createTheme({
 		},
 	},
 	components: {
+		    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+          boxShadow: '50px bottom black',
+        },
+      },
+    },
 		MuiButton: {
 			styleOverrides: {
 				root: {
 					borderRadius: 8,
 					textTransform: 'none',
 				},
+				containedPrimary: {
+					backgroundColor: '#4caf50',
+					padding:'1rem',
+					width:'10rem',
+					fontSize:'1rem',
+					color: '#fff',
+					'&:hover': {
+						backgroundColor: '#66ed6b',
+          			},
+        		},
 			},
+	 variants: [
+        {
+          props: { variant: 'nav' },
+          style: ({ theme }) => ({
+            textTransform: 'none',
+            fontWeight: 600,
+            color: theme.palette.common.black,
+            position: 'relative',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              height: '2px',
+              width: '100%',
+              bottom: 0,
+              left: 0,
+              backgroundColor: theme.palette.primary.main,
+              transform: 'scaleX(0)',
+              transformOrigin: 'center',
+              transition: 'transform 0.3s ease',
+            },
+            '&:hover::after': {
+              transform: 'scaleX(1)',
+            },
+          }),
+        },
+      ],
 		},
 		MuiSelect: {
 			styleOverrides: {

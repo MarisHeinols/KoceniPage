@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styles from "./Selector.module.css";
-import SkaititajaInfo from "../SkaititajaInfo";
 import {
   FormControl,
   FormHelperText,
@@ -8,7 +7,8 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import type { UtilityMeeter } from "~/pages/skaititajiPage";
+import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
+import UtilityMeeterInfo from "../UtilityMeeterInfo";
 export const mockUtilityMeeter: UtilityMeeter = {
   id: "CH123456",
   adress: "Pirma iela 37",
@@ -34,8 +34,9 @@ export const mockUtilityMeeter: UtilityMeeter = {
 };
 interface SelectorProps {
   setUtilityMeeter: (fetchedUtilityMeeter: UtilityMeeter) => void;
+  utilityMeeter: UtilityMeeter | null;
 }
-const Selector = ({ setUtilityMeeter }: SelectorProps) => {
+const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedAdress, setSelectedAdress] = useState<string | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<string | null>(
@@ -108,7 +109,7 @@ const Selector = ({ setUtilityMeeter }: SelectorProps) => {
           </Select>
         </FormControl>
       </div>
-      <SkaititajaInfo />
+      <UtilityMeeterInfo utilityMeeter={utilityMeeter} />
     </div>
   );
 };

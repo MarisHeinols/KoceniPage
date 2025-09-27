@@ -1,8 +1,9 @@
 import Selector from "~/components/Selector";
-import styles from "./skaititajiPage.module.css";
+import styles from "./utilityMeeterPage.module.css";
 import Form from "~/components/Form";
 import SignOff from "~/components/SignOff";
 import { useState } from "react";
+import { Button } from "@mui/material";
 export interface UtilityMeeter {
   id: string;
   adress: string;
@@ -33,7 +34,7 @@ export interface Signature {
   worker: string;
   date: Date;
 }
-const SkaititajiPage = () => {
+const UtilityMeeterPage = () => {
   const [utilityMeeter, setUtilityMeeter] = useState<UtilityMeeter | null>(
     null
   );
@@ -41,7 +42,10 @@ const SkaititajiPage = () => {
 
   return (
     <div className={styles.content}>
-      <Selector setUtilityMeeter={setUtilityMeeter} />
+      <Selector
+        setUtilityMeeter={setUtilityMeeter}
+        utilityMeeter={utilityMeeter}
+      />
       {utilityMeeter && (
         <>
           <Form
@@ -49,10 +53,13 @@ const SkaititajiPage = () => {
             setUtilityMeeter={setUtilityMeeter}
           />
           <SignOff setSigniture={setSigniture} />
+          <div className={styles.buttonContainer}>
+            <Button variant="contained">Iesniegt</Button>
+          </div>
         </>
       )}
     </div>
   );
 };
 
-export default SkaititajiPage;
+export default UtilityMeeterPage;

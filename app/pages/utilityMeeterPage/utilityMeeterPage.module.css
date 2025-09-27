@@ -7,3 +7,11 @@
     align-items: center;
     padding-top: 2rem;
 }
+
+.buttonContainer {
+    display: flex;
+    width: 100%;
+    align-content: center;
+    justify-content: center;
+    padding-bottom: 5rem;
+}

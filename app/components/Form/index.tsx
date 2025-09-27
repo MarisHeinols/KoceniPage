@@ -15,7 +15,7 @@ import React from "react";
 import styles from "./Form.module.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import type { UtilityMeeter } from "~/pages/skaititajiPage";
+import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
 
 interface FormProps {
   utilityMeeter: UtilityMeeter;

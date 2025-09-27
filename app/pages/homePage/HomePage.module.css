@@ -1,0 +1,83 @@
+.homePageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 3rem;
+    width: 80%;
+}
+
+.heroText {
+    font-weight: bold;
+    font-size: xx-large;
+    text-transform: uppercase;
+    opacity: 0.8;
+    padding-bottom: 3rem;
+    text-align: center;
+}
+
+.selector {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+    padding-bottom: 3rem;
+}
+
+
+.selectorBoxGreen, .selectorBoxBlue {
+    display: flex;
+    position: relative; 
+    overflow: hidden;
+    width: 50%;
+    height: 20rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: xxx-large;
+    font-weight: bold;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    
+}
+
+.selectorBoxGreen:hover,
+.selectorBoxBlue:hover {
+    transform: translateY(-10px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+}
+
+
+.selectorBoxGreen {
+    background-color: #83d786;
+}
+
+.selectorBoxBlue {
+    background-color: rgb(120, 154, 233);
+}
+
+.selectorBoxGreen svg,
+.selectorBoxBlue svg {
+  position: absolute;
+  bottom: -20px;         
+  right: -20px;
+  font-size: 15rem;       
+  opacity: 0.2;           
+  pointer-events: none;
+  transform: rotate(-20deg);
+  transition: transform 0.3s ease; 
+}
+
+.selectorBoxGreen:hover svg,
+.selectorBoxBlue:hover svg {
+  transform: rotate(-10deg) scale(1.05);
+}
+
+@media (max-width: 760px) {
+    .selector {
+        flex-direction: column;
+    }
+
+    .selectorBoxGreen,
+    .selectorBoxBlue {
+        width: 100%;
+    }
+}

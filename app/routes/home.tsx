@@ -1,8 +1,8 @@
 import type { Route } from "./+types/home";
-import SkaititajiPage from "../pages/skaititajiPage";
+import HomePage from "~/pages/homePage";
 
 export function meta({}: Route.MetaArgs) {}
 
 export default function Home() {
-  return <SkaititajiPage />;
+  return <HomePage />;
 }

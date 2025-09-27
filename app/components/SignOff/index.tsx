@@ -3,7 +3,7 @@ import styles from "./SignOff.module.css";
 import { Stack, TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import type { Signature } from "~/pages/skaititajiPage";
+import type { Signature } from "~/pages/utilityMeeterPage";
 interface SignOffProps {
   setSigniture: (signature: Signature) => void;
 }
@@ -33,6 +33,7 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
           <TextField
             label="Paraksts"
             variant="outlined"
+            required
             value={clientSigniture}
             onChange={(e) => {
               setClientSigniture(e.currentTarget.value);
@@ -46,6 +47,7 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
           <TextField
             label="Paraksts"
             variant="outlined"
+            required
             value={workerSigniture}
             onChange={(e) => {
               setWorkerSigniture(e.currentTarget.value);
