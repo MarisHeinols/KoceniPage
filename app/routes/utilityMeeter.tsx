@@ -1,5 +1,6 @@
 import UtilityMeeterPage from "~/pages/utilityMeeterPage";
 import type { Route } from "../+types/root";
+import { ProtectedRoute } from "./security/ProtectedRoute";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,5 +10,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function UtilityMeeter() {
-  return <UtilityMeeterPage />;
+  return (
+    <ProtectedRoute>
+      <UtilityMeeterPage />
+    </ProtectedRoute>
+  );
 }

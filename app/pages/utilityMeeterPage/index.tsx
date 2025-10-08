@@ -26,17 +26,17 @@ export interface UtilityMeeter {
     marka: string;
     diametrs: string;
     garums: string;
-    skaititajaTips: string;
     piezimes: string;
     verifiedDate: Date | null;
   };
+  signiture: Signature;
 }
 
 export interface Signature {
   clientSigniture: string;
   workerSigniture: string;
   worker: string;
-  date: Date;
+  date: Date | null;
 }
 
 const UtilityMeeterPage = () => {

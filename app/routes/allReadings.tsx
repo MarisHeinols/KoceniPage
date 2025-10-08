@@ -1,5 +1,6 @@
 import AllReadingsPage from "~/pages/allReadingsPage";
 import type { Route } from "../+types/root";
+import { ProtectedRoute } from "./security/ProtectedRoute";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,5 +10,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function AllReadings() {
-  return <AllReadingsPage />;
+  return (
+    <ProtectedRoute>
+      <AllReadingsPage />
+    </ProtectedRoute>
+  );
 }

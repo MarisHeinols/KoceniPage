@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Selector.module.css";
 import {
+  Box,
+  CircularProgress,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -9,106 +11,130 @@ import {
 } from "@mui/material";
 import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
 import UtilityMeeterInfo from "../UtilityMeeterInfo";
-export const mockUtilityMeeter: UtilityMeeter = {
-  id: "CH123456",
-  adress: "Pirma iela 37",
-  city: "Koceni",
-  details: {
-    action: "Pārbaude",
-    radijums: "5",
-    iemesls: "Regulāra pārbaude",
-    novietojums: "Horizontāli",
-    atrodas: "Ēka",
-    kanalizacija: "Neatkarīgais skaitītājs",
-    ipasums: "KKS Īpašums",
-    installed: ["Filtrs", "Pretvārsts"],
-    tips: "Komercskaitītājs",
-    plombaNr: "PL12345",
-    marka: "MarkaX",
-    diametrs: "15",
-    garums: "20",
-    skaititajaTips: "Mehāniskais",
-    piezimes: "Viss kārtībā",
-    verifiedDate: new Date("2025-01-15"),
-  },
-};
+import { doc, getDoc } from "firebase/firestore";
+import { getAddressMapping, getUtilityMeeterById } from "~/firestore/firestore";
+
 interface SelectorProps {
   setUtilityMeeter: (fetchedUtilityMeeter: UtilityMeeter) => void;
   utilityMeeter: UtilityMeeter | null;
 }
 const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedAdress, setSelectedAdress] = useState<string | null>(null);
-  const [selectedComponent, setSelectedComponent] = useState<string | null>(
-    null
-  );
+  const [mapping, setMapping] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [loading, setLoading] = useState(true);
 
-  const handleSelectedCity = (city: string | null) => {
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [selectedMeter, setSelectedMeter] = useState<string>("");
+
+  // Fetch address mapping on load
+  useEffect(() => {
+    const fetchMapping = async () => {
+      try {
+        const data = await getAddressMapping();
+        setMapping(data);
+      } catch (err) {
+        console.error("Error loading address mapping:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMapping();
+  }, []);
+
+  // Derived lists
+  const cities = Object.keys(mapping);
+  const addresses = selectedCity
+    ? Object.keys(mapping[selectedCity] || {})
+    : [];
+  const meters =
+    selectedCity && selectedAddress
+      ? mapping[selectedCity][selectedAddress] || []
+      : [];
+
+  const handleCitySelect = (city: string) => {
     setSelectedCity(city);
+    setSelectedAddress("");
+    setSelectedMeter("");
   };
-  const handleSelectedAdress = (adress: string | null) => {
-    setSelectedAdress(adress);
+
+  const handleAddressSelect = (address: string) => {
+    setSelectedAddress(address);
+    setSelectedMeter("");
   };
-  const handleSelectedCompoent = (component: string | null) => {
-    setSelectedComponent(component);
-    setUtilityMeeter(mockUtilityMeeter);
+
+  const handleMeterSelect = async (meterId: string) => {
+    setSelectedMeter(meterId);
+    const meterData = await getUtilityMeeterById(meterId);
+    if (meterData) {
+      setUtilityMeeter(meterData);
+    }
   };
+
+  if (loading) {
+    return (
+      <Box p={4} display="flex" justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <div className={styles.selectorContainer}>
       <div className={styles.selectorHalf}>
-        <FormControl>
-          <InputLabel id="Ciems">Ciems</InputLabel>
+        {/* City */}
+        <FormControl sx={{ width: "100%", mb: 2 }}>
+          <InputLabel id="city">Ciems</InputLabel>
           <Select
-            sx={{ width: "100%" }}
-            labelId="Ciems"
-            id="ciems"
+            labelId="city"
             value={selectedCity}
             label="Ciems"
-            onChange={(e) => {
-              handleSelectedCity(e.target.value);
-            }}
+            onChange={(e) => handleCitySelect(e.target.value)}
           >
-            <MenuItem value={"Koceni"}>Koceni</MenuItem>
-            <MenuItem value={"Vaidava"}>Vaidava</MenuItem>
-            <MenuItem value={"Berzaine"}>Berzaine</MenuItem>
+            {cities.map((city) => (
+              <MenuItem key={city} value={city}>
+                {city}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-        <FormControl>
-          <InputLabel id="Adresse">Adresse</InputLabel>
+
+        {/* Address */}
+        <FormControl sx={{ width: "100%", mb: 2 }} disabled={!selectedCity}>
+          <InputLabel id="address">Adrese</InputLabel>
           <Select
-            sx={{ width: "100%" }}
-            labelId="Adresse"
-            id="adresse"
-            value={selectedAdress}
-            label="Adresse"
-            onChange={(e) => {
-              handleSelectedAdress(e.target.value);
-            }}
+            labelId="address"
+            value={selectedAddress}
+            label="Adrese"
+            onChange={(e) => handleAddressSelect(e.target.value)}
           >
-            <MenuItem value={"Pirma iela 37"}>Pirma iela 37</MenuItem>
-            <MenuItem value={"Burtnieku iela"}>Burtnieku iela</MenuItem>
-            <MenuItem value={"Cuku iela"}>Cuku iela</MenuItem>
+            {addresses.map((address) => (
+              <MenuItem key={address} value={address}>
+                {address}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-        <FormControl>
-          <InputLabel id="Skaititajs">Skaititajs</InputLabel>
+
+        {/* Meter */}
+        <FormControl sx={{ width: "100%", mb: 2 }} disabled={!selectedAddress}>
+          <InputLabel id="meter">Skaitītājs</InputLabel>
           <Select
-            sx={{ width: "100%" }}
-            labelId="Skaititajs"
-            id="skaititajs"
-            value={selectedComponent}
-            label="Skaititajs"
-            onChange={(e) => {
-              handleSelectedCompoent(e.target.value);
-            }}
+            labelId="meter"
+            value={selectedMeter}
+            label="Skaitītājs"
+            onChange={(e) => handleMeterSelect(e.target.value)}
           >
-            <MenuItem value={"CH1213"}>CH1213</MenuItem>
-            <MenuItem value={"CH185812"}>CH185812</MenuItem>
-            <MenuItem value={"CH12387128937"}>CH12387128937</MenuItem>
+            {meters.map((meterId) => (
+              <MenuItem key={meterId} value={meterId}>
+                {meterId}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </div>
+
       <UtilityMeeterInfo utilityMeeter={utilityMeeter} />
     </div>
   );

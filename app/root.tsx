@@ -12,6 +12,7 @@ import "./app.css";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "./mui/theme";
 import NavBar from "./components/NavBar";
+import { AuthProvider } from "./auth/AuthContext";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,9 +48,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <NavBar />
-      <Outlet />
+      <AuthProvider>
+        <CssBaseline />
+        <NavBar />
+        <Outlet />
+      </AuthProvider>
     </ThemeProvider>
   );
 }
