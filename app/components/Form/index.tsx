@@ -16,13 +16,19 @@ import styles from "./Form.module.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
+import { isFormComplete } from "./utils/utils";
 
 interface FormProps {
   utilityMeeter: UtilityMeeter;
   setUtilityMeeter: (newUtilityMeeter: UtilityMeeter) => void;
+  setIsFormCompleted: (isFormValid: boolean) => void;
 }
 
-const Form = ({ utilityMeeter, setUtilityMeeter }: FormProps) => {
+const Form = ({
+  utilityMeeter,
+  setUtilityMeeter,
+  setIsFormCompleted,
+}: FormProps) => {
   const formData = utilityMeeter.details;
 
   const updateField = <K extends keyof UtilityMeeter["details"]>(
@@ -36,6 +42,9 @@ const Form = ({ utilityMeeter, setUtilityMeeter }: FormProps) => {
         [field]: value,
       },
     });
+    if (isFormComplete(formData)) {
+      setIsFormCompleted(true);
+    }
   };
 
   const handleInstalledChange = (

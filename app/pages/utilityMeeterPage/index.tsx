@@ -3,32 +3,17 @@ import Selector from "~/components/Selector";
 import styles from "./utilityMeeterPage.module.css";
 import Form from "~/components/Form";
 import SignOff from "~/components/SignOff";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { addNewEntry } from "~/firestore/firestore";
 import Modal from "~/components/Modal";
 import { useNavigate } from "react-router";
+import { isFormComplete } from "~/components/Form/utils/utils";
 export interface UtilityMeeter {
   id: string;
   adress: string;
   city: string;
-  details: {
-    action: "Pārbaude" | "Nomaiņa";
-    radijums: string;
-    iemesls: string;
-    novietojums: string;
-    atrodas: string;
-    kanalizacija: string;
-    ipasums: string;
-    installed: string[];
-    tips: string;
-    plombaNr: string;
-    marka: string;
-    diametrs: string;
-    garums: string;
-    piezimes: string;
-    verifiedDate: Date | null;
-  };
+  details: Details;
   signiture: Signature;
 }
 
@@ -39,6 +24,24 @@ export interface Signature {
   date: Date | null;
 }
 
+export interface Details {
+  action: "Pārbaude" | "Nomaiņa";
+  radijums: string;
+  iemesls: string;
+  novietojums: string;
+  atrodas: string;
+  kanalizacija: string;
+  ipasums: string;
+  installed: string[];
+  tips: string;
+  plombaNr: string;
+  marka: string;
+  diametrs: string;
+  garums: string;
+  piezimes: string;
+  verifiedDate: Date | null;
+}
+
 const UtilityMeeterPage = () => {
   const [utilityMeeter, setUtilityMeeter] = useState<UtilityMeeter | null>(
     null
@@ -46,6 +49,7 @@ const UtilityMeeterPage = () => {
   const [signiture, setSigniture] = useState<Signature | null>(null);
   const [loading, setIsLoading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
+  const [formIsCompleted, setIsFormCompleted] = useState(false);
 
   const navigate = useNavigate();
 
@@ -80,10 +84,12 @@ const UtilityMeeterPage = () => {
           <Form
             utilityMeeter={utilityMeeter}
             setUtilityMeeter={setUtilityMeeter}
+            setIsFormCompleted={setIsFormCompleted}
           />
           <SignOff setSigniture={setSigniture} />
           <div className={styles.buttonContainer}>
             <Button
+              disabled={signiture && formIsCompleted ? false : true}
               variant="contained"
               onClick={() => {
                 handleUploadFormData();

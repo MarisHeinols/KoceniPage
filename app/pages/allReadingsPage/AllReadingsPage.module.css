@@ -1,0 +1,11 @@
+.allReadingPageContainer {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+}
+
+.headerText {
+    font-size: 1.6rem;
+}

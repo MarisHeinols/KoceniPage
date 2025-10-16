@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { collection, addDoc, getFirestore, doc, setDoc, getDoc, Timestamp } from "firebase/firestore"; 
+import { collection, addDoc, getFirestore, doc, setDoc, getDoc, Timestamp, getDocs } from "firebase/firestore"; 
 import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import * as XLSX from "xlsx";
@@ -197,3 +197,24 @@ export const getUtilityMeeterById = async (
 
   return data;
 };
+
+export const getUserCredentails = () => {
+  const email =  auth.currentUser?.email
+  if(email){
+    const emailNameSurname = email.split("@")[0]
+    const name = emailNameSurname.split(".")[0].toUpperCase()
+     const surname = emailNameSurname.split(".")[1].toUpperCase()
+     return name + " " +surname
+  }
+
+}
+
+export const getAllEntries = async () => {
+  const querySnapshot = await getDocs(collection(db, "utilityMeters"));
+  const data = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as UtilityMeeter[];
+
+  return data 
+}

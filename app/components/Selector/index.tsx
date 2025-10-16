@@ -82,7 +82,7 @@ const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
 
   return (
     <div className={styles.selectorContainer}>
-      <div className={styles.selectorHalf}>
+      <div className={styles.selectorHalfLeft}>
         {/* City */}
         <FormControl sx={{ width: "100%", mb: 2 }}>
           <InputLabel id="city">Ciems</InputLabel>
@@ -134,8 +134,9 @@ const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
           </Select>
         </FormControl>
       </div>
-
-      <UtilityMeeterInfo utilityMeeter={utilityMeeter} />
+      <div className={styles.selectorHalfRight}>
+        <UtilityMeeterInfo utilityMeeter={utilityMeeter} />
+      </div>
     </div>
   );
 };

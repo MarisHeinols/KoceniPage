@@ -4,6 +4,7 @@ import { Stack, TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import type { Signature } from "~/pages/utilityMeeterPage";
+import { getUserCredentails } from "~/firestore/firestore";
 interface SignOffProps {
   setSigniture: (signature: Signature) => void;
 }
@@ -12,6 +13,15 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
   const [workerSigniture, setWorkerSigniture] = useState<string | null>(null);
   const [workerName, setWorkerName] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!workerName) {
+      const respons = getUserCredentails();
+      if (respons) {
+        setWorkerName(respons);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (clientSigniture && workerSigniture && workerName && selectedDate) {
@@ -42,7 +52,7 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
         </Stack>
       </div>
       <div className={styles.signOffEntry}>
-        <h2>Darbinieks: Vards Uzvards / </h2>
+        <h2>Darbinieks: {workerName} </h2>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField
             label="Paraksts"
@@ -51,7 +61,6 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
             value={workerSigniture}
             onChange={(e) => {
               setWorkerSigniture(e.currentTarget.value);
-              setWorkerName(e.currentTarget.value);
             }}
           />
         </Stack>
