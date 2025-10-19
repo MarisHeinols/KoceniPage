@@ -13,13 +13,13 @@ interface UploadResult {
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBkTpRIlQZsbCiAfgJoPZs3PANt9FmrRBY",
-  authDomain: "kocenipage.firebaseapp.com",
-  projectId: "kocenipage",
-  storageBucket: "kocenipage.firebasestorage.app",
-  messagingSenderId: "929360571497",
-  appId: "1:929360571497:web:d48e77c18e9588552cc6f8",
-  measurementId: "G-QYSS3W4WGN"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

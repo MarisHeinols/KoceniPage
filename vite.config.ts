@@ -5,18 +5,27 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+
   test: {
     globals: true,
     environment: "jsdom",
+    setupFiles: ["./vitest.setup.ts"], // 👈 add this
     pool: "vmThreads",
+
     deps: {
       inline: [
-        /@mui\/x-data-grid/, // bundle the DataGrid dependency instead of letting Vitest parse .css
+        /@mui\/x-data-grid/,
         /@mui\/x-data-grid-pro/,
       ],
       web: {
-        transformCss: false, // prevents Vitest from trying to parse .css in node_modules
+        transformCss: false, // 👈 critical: don't parse CSS imports
       },
+    },
+  },
+
+  css: {
+    modules: {
+      localsConvention: "camelCase",
     },
   },
 });

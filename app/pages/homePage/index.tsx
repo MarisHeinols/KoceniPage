@@ -3,10 +3,11 @@ import styles from "./HomePage.module.css";
 import AddchartIcon from "@mui/icons-material/Addchart";
 import BackupTableIcon from "@mui/icons-material/BackupTable";
 import { Link } from "react-router";
+import { getUserCredentails } from "~/firestore/firestore";
 const HomePage = () => {
   return (
     <div className={styles.homePageContainer}>
-      <h1 className={styles.heroText}>Welcome Edgars Liepins</h1>
+      <h1 className={styles.heroText}>Welcome {getUserCredentails()}</h1>
       <div className={styles.selector}>
         <Link to="/utility-meter" className={styles.selectorBoxGreen}>
           <h2 style={{ color: "white" }}>Jauns Radijums</h2>

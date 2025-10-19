@@ -49,12 +49,19 @@ const theme = createTheme({
 				containedPrimary: {
 					backgroundColor: '#4caf50',
 					padding:'1rem',
-					width:'10rem',
+					width: '100%',
+					height:'3rem',
 					fontSize:'1rem',
 					color: '#fff',
 					'&:hover': {
 						backgroundColor: '#66ed6b',
           			},
+        		},
+								outlinedPrimary: {
+					padding:'1rem',
+					width: '100%',
+					height:'3rem',
+					fontSize:'1rem',
         		},
 			},
 	 variants: [

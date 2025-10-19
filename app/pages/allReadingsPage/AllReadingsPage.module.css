@@ -9,3 +9,9 @@
 .headerText {
     font-size: 1.6rem;
 }
+
+.buttonContainer {
+    display: flex;
+    width: 30%;
+    gap: 1rem;
+}
