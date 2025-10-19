@@ -28,19 +28,55 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 export const auth = getAuth(app);
 
-export const addNewEntry = async (utilityMeeter:UtilityMeeter) => {
+export const addNewEntryWithRetry = async (utilityMeeter: UtilityMeeter): Promise<boolean> => {
+  let attempt = 0;
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000;
+
+  while (attempt < MAX_RETRIES) {
     try {
       const docRef = doc(db, "utilityMeters", utilityMeeter.id);
+      await setDoc(docRef, utilityMeeter);
+      return true;
+    } catch (err) {
+      attempt++;
+      if (attempt < MAX_RETRIES) {
+        await new Promise((res) => setTimeout(res, RETRY_DELAY));
+      } else {
+        saveEntryForLater(utilityMeeter);
+        return false; 
+      }
+    }
+  }
 
-    await setDoc(docRef, utilityMeeter);
+  return false; 
+};
 
-    console.log("Document written with ID:", utilityMeeter.id);
-  return true
-} catch (e) {
-  console.error("Error adding document: ", e);
-   return false;
-}
-}
+const saveEntryForLater = (entry: UtilityMeeter) => {
+  const pending = JSON.parse(localStorage.getItem("pendingEntries") || "[]");
+  pending.push(entry);
+  localStorage.setItem("pendingEntries", JSON.stringify(pending));
+};
+
+export const retryPendingEntries = async () => {
+  const pending: UtilityMeeter[] = JSON.parse(
+    localStorage.getItem("pendingEntries") || "[]"
+  );
+  if (!pending.length) return;
+
+  const successful: string[] = [];
+
+  for (const entry of pending) {
+    const success = await addNewEntryWithRetry(entry);
+    if (success) successful.push(entry.id);
+  }
+
+  if (successful.length) {
+    const remaining = pending.filter((e) => !successful.includes(e.id));
+    localStorage.setItem("pendingEntries", JSON.stringify(remaining));
+  }
+};
+
 
 export const login = (email:string, password:string) => {
   return signInWithEmailAndPassword(auth, email, password);

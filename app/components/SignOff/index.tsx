@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./SignOff.module.css";
 import { Stack, TextField } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import type { Signature } from "~/pages/utilityMeeterPage";
 import { getUserCredentails } from "~/firestore/firestore";
 interface SignOffProps {
@@ -12,7 +10,6 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
   const [clientSigniture, setClientSigniture] = useState<string | null>(null);
   const [workerSigniture, setWorkerSigniture] = useState<string | null>(null);
   const [workerName, setWorkerName] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   useEffect(() => {
     if (!workerName) {
@@ -24,15 +21,15 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
   }, []);
 
   useEffect(() => {
-    if (clientSigniture && workerSigniture && workerName && selectedDate) {
+    if (clientSigniture && workerSigniture && workerName) {
       setSigniture({
         clientSigniture: clientSigniture,
         workerSigniture: workerSigniture,
         worker: workerName,
-        date: selectedDate,
+        date: new Date(),
       });
     }
-  }, [selectedDate, workerName, workerSigniture, clientSigniture]);
+  }, [workerName, workerSigniture, clientSigniture]);
 
   return (
     <div className={styles.signOffContainer}>
@@ -65,16 +62,6 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
           />
         </Stack>
       </div>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-          <DatePicker
-            label="Datums"
-            value={selectedDate}
-            onChange={(newValue) => setSelectedDate(newValue)}
-            slotProps={{ textField: { fullWidth: true } }}
-          />
-        </Stack>
-      </LocalizationProvider>
     </div>
   );
 };

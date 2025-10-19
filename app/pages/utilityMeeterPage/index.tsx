@@ -5,10 +5,10 @@ import Form from "~/components/Form";
 import SignOff from "~/components/SignOff";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
-import { addNewEntry } from "~/firestore/firestore";
+import { addNewEntryWithRetry } from "~/firestore/firestore";
 import Modal from "~/components/Modal";
 import { useNavigate } from "react-router";
-import { isFormComplete } from "~/components/Form/utils/utils";
+
 export interface UtilityMeeter {
   id: string;
   adress: string;
@@ -55,11 +55,10 @@ const UtilityMeeterPage = () => {
 
   const handleUploadFormData = async () => {
     if (!utilityMeeter) return;
-
     setIsLoading(true);
     setUploadSuccess(null);
 
-    const success = await addNewEntry(utilityMeeter);
+    const success = await addNewEntryWithRetry(utilityMeeter);
 
     setIsLoading(false);
     setUploadSuccess(success);
@@ -71,6 +70,14 @@ const UtilityMeeterPage = () => {
     setUtilityMeeter(null);
     navigate("/");
   };
+
+  useEffect(() => {
+    const currentUtilityMeeter = utilityMeeter;
+    if (signiture) {
+      currentUtilityMeeter!.signiture = signiture;
+      setUtilityMeeter(currentUtilityMeeter);
+    }
+  }, [signiture]);
 
   return (
     <div className={styles.content}>
