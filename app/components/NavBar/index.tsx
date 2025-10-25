@@ -58,7 +58,7 @@ const NavBar = () => {
               component={Link}
               to="/utility-meter"
             >
-              Jauns raidījums
+              Jauns Rādījums
             </Button>
             <Button
               color="inherit"
@@ -66,7 +66,7 @@ const NavBar = () => {
               component={Link}
               to="/all-readings"
             >
-              Visi raidījumi
+              Visi Rādījumi
             </Button>
           </Box>
 

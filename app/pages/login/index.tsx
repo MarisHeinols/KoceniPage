@@ -58,7 +58,7 @@ const Login = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Sign in
+          Pierakstīties
         </Typography>
 
         {error && (
@@ -72,7 +72,7 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
-            label="Email Address"
+            label="Epasts"
             autoComplete="email"
             autoFocus
             value={email}
@@ -83,7 +83,7 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
-            label="Password"
+            label="Parole"
             type="password"
             autoComplete="current-password"
             value={password}
@@ -101,7 +101,7 @@ const Login = () => {
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              "Sign In"
+              "Pierakstīties"
             )}
           </Button>
         </Box>

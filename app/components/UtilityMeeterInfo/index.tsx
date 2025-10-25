@@ -28,7 +28,7 @@ const UtilityMeeterInfo = ({ utilityMeeter }: UtilityMeeterInfoProps) => {
       ) : (
         <>
           <h2 className={styles.infoContainerHeaderWarning}>
-            Nav Izvēlēts skaitītājs
+            Nav Izvēlēts Skaitītājs
           </h2>
         </>
       )}

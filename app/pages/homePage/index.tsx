@@ -7,15 +7,15 @@ import { getUserCredentails, logout } from "~/firestore/firestore";
 const HomePage = () => {
   return (
     <div className={styles.homePageContainer}>
-      <h1 className={styles.heroText}>Welcome {getUserCredentails()}</h1>
+      <h1 className={styles.heroText}>Sveiks {getUserCredentails()} !</h1>
       <div className={styles.selector}>
         <Link to="/utility-meter" className={styles.selectorBoxGreen}>
-          <h2 style={{ color: "white" }}>Jauns Radijums</h2>
+          <h2 style={{ color: "white" }}>Jauns Rādījums</h2>
           <AddchartIcon />
         </Link>
 
         <Link to="/all-readings" className={styles.selectorBoxBlue}>
-          <h2 style={{ color: "white" }}>Visi Radijums</h2>
+          <h2 style={{ color: "white" }}>Visi Rādījumi</h2>
           <BackupTableIcon />
         </Link>
       </div>
