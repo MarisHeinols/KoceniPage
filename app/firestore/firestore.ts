@@ -5,12 +5,25 @@ import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import * as XLSX from "xlsx";
 import { parseAddress, parseExcelSerialDate, parseLatvianAddress, parseLatvianDate } from "./utils/utils";
 
+
+export interface AddressMapping {
+  [city: string]: {
+    [address: string]: string[];
+  };
+}
+
 interface UploadResult {
   errors: { row: number; message: string }[];
   added: string[];
   skipped: string[];
 }
 
+
+interface Mapping {
+  [city: string]: {
+    [address: string]: string[];
+  };
+}
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -106,7 +119,7 @@ export const uploadUtilityMetersFromExcel = async (
       if (!id) continue;
 
       const { address, city } = parseLatvianAddress(row["Address"]);
-const date = parseExcelSerialDate(row["SkaE.Nāk.verifikācijas datums"]);
+      const date = parseExcelSerialDate(row["SkaE.Nāk.verifikācijas datums"]);
 
 
       const docRef = doc(db, "utilityMeters", id);
@@ -151,7 +164,7 @@ const date = parseExcelSerialDate(row["SkaE.Nāk.verifikācijas datums"]);
 
       await updateAddressMapping(city, address, id);
     } catch (err: any) {
-      console.error(`❌ Error on row ${i + 1}:`, err);
+      console.error(`Error on row ${i + 1}:`, err);
       errors.push({
         row: i + 1,
         message: err?.message || "Unknown error",
@@ -161,12 +174,6 @@ const date = parseExcelSerialDate(row["SkaE.Nāk.verifikācijas datums"]);
   return { added, skipped, errors  };
 };
 
-
-interface Mapping {
-  [city: string]: {
-    [address: string]: string[];
-  };
-}
 
 export const updateAddressMapping = async (
   rawCityOrAddress: string,
@@ -181,7 +188,7 @@ export const updateAddressMapping = async (
   const { city, address } = parseLatvianAddress(fullAddress);
 
   if (!city || !address) {
-    console.warn("⚠️ Could not parse address:", fullAddress);
+    console.warn("Could not parse address:", fullAddress);
     return;
   }
 
@@ -198,13 +205,7 @@ export const updateAddressMapping = async (
 
   await setDoc(docRef, mapping);
 
-  console.log(`✅ Address mapping updated: ${city} → ${address} → ${meterId}`);
 };
-export interface AddressMapping {
-  [city: string]: {
-    [address: string]: string[];
-  };
-}
 
 export const getAddressMapping = async (): Promise<AddressMapping> => {
   const docRef = doc(db, "addresses", "cityMapping");

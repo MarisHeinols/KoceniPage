@@ -15,7 +15,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { getAddressMapping, getUtilityMeeterById } from "~/firestore/firestore";
 
 interface SelectorProps {
-  setUtilityMeeter: (fetchedUtilityMeeter: UtilityMeeter) => void;
+  setUtilityMeeter: (fetchedUtilityMeeter: UtilityMeeter | null) => void;
   utilityMeeter: UtilityMeeter | null;
 }
 const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
@@ -57,11 +57,13 @@ const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
     setSelectedCity(city);
     setSelectedAddress("");
     setSelectedMeter("");
+    setUtilityMeeter(null);
   };
 
   const handleAddressSelect = (address: string) => {
     setSelectedAddress(address);
     setSelectedMeter("");
+    setUtilityMeeter(null);
   };
 
   const handleMeterSelect = async (meterId: string) => {

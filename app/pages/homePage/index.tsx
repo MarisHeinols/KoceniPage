@@ -3,7 +3,7 @@ import styles from "./HomePage.module.css";
 import AddchartIcon from "@mui/icons-material/Addchart";
 import BackupTableIcon from "@mui/icons-material/BackupTable";
 import { Link } from "react-router";
-import { getUserCredentails } from "~/firestore/firestore";
+import { getUserCredentails, logout } from "~/firestore/firestore";
 const HomePage = () => {
   return (
     <div className={styles.homePageContainer}>
@@ -18,6 +18,14 @@ const HomePage = () => {
           <h2 style={{ color: "white" }}>Visi Radijums</h2>
           <BackupTableIcon />
         </Link>
+      </div>
+      <div
+        className={styles.logOutButton}
+        onClick={() => {
+          logout();
+        }}
+      >
+        <h2 style={{ color: "white" }}>Izrakstīties</h2>
       </div>
     </div>
   );
