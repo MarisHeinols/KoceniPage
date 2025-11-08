@@ -1,82 +1,144 @@
-import * as XLSX from "xlsx";
+import { collection, deleteDoc, Firestore, getDocs } from 'firebase/firestore';
+import * as XLSX from 'xlsx';
 
 export const parseAddress = (fullAddress: string) => {
-  const parts = fullAddress.split(",").map((p) => p.trim());
+	const parts = fullAddress.split(',').map((p) => p.trim());
 
-  if (parts.length < 3) {
-    return { address: fullAddress, city: "" };
-  }
+	if (parts.length < 3) {
+		return { address: fullAddress, city: '' };
+	}
 
-  const address = parts.slice(0, 2).join(" ");
+	const address = parts.slice(0, 2).join(' ');
 
-  const city = parts[2];
+	const city = parts[2];
 
-  return { address, city };
+	return { address, city };
 };
 
-export const parseExcelSerialDate = (serial: number | string | undefined): Date | null => {
-  if (serial === undefined || serial === null || serial === "") return null;
+export const parseExcelSerialDate = (
+	serial: number | string | undefined
+): Date | null => {
+	if (serial === undefined || serial === null || serial === '') return null;
 
-  if (typeof serial === "number") {
-    // Excel stores dates as number of days since 1899-12-31
-    const utc_days = serial - 25569;
-    const utc_value = utc_days * 86400 * 1000;
-    return new Date(utc_value);
-  }
+	if (typeof serial === 'number') {
+		// Excel stores dates as number of days since 1899-12-31
+		const utc_days = serial - 25569;
+		const utc_value = utc_days * 86400 * 1000;
+		return new Date(utc_value);
+	}
 
-  if (typeof serial === "string") {
-    // fallback to Latvian date string parser
-    return parseLatvianDate(serial);
-  }
+	if (typeof serial === 'string') {
+		// fallback to Latvian date string parser
+		return parseLatvianDate(serial);
+	}
 
-  return null;
+	return null;
 };
 
 export const parseLatvianDate = (dateStr: string | undefined): Date | null => {
-  if (!dateStr) return null;
+	if (!dateStr) return null;
 
-  // Handle common Latvian date formats: "01.07.2025" or "01/07/2025"
-  const match = dateStr.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/);
-  if (!match) return null;
+	// Handle common Latvian date formats: "01.07.2025" or "01/07/2025"
+	const match = dateStr.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/);
+	if (!match) return null;
 
-  const day = parseInt(match[1], 10);
-  const month = parseInt(match[2], 10) - 1; // JS months 0-11
-  const year = parseInt(match[3], 10);
+	const day = parseInt(match[1], 10);
+	const month = parseInt(match[2], 10) - 1; // JS months 0-11
+	const year = parseInt(match[3], 10);
 
-  const date = new Date(year, month, day);
-  return isNaN(date.getTime()) ? null : date;
+	const date = new Date(year, month, day);
+	return isNaN(date.getTime()) ? null : date;
 };
 
-export const parseLatvianAddress = (fullAddress: string): {
-  city: string;
-  address: string;
-} => {
-  if (!fullAddress) return { city: "", address: "" };
+export const parseLatvianAddress = (
+	fullAddress: string
+): { city: string; address: string } => {
+	if (!fullAddress) return { city: '', address: '' };
 
-  const parts = fullAddress
-    .split(",")
-    .map((p) => p.trim())
-    .filter(Boolean);
+	const parts = fullAddress
+		.split(',')
+		.map((p) => p.trim())
+		.filter(Boolean);
 
-  // remove administrative suffixes (pagasts, novads)
-  const filtered = parts.filter((p) => !/pagasts|novads/i.test(p));
+	if (parts.length < 2) {
+		return {
+			address: parts[0] || '',
+			city: '',
+		};
+	}
 
-  if (filtered.length === 0) return { city: "", address: "" };
+	const address = parts[0];
+	const city = parts[1];
 
-  const last = filtered[filtered.length - 1]; // assume last meaningful part is city
-  const beforeCity = filtered.slice(0, -1); // rest is address
+	return { city, address };
+};
 
-  let address = beforeCity.join(", ");
-
-  // normalize apartment/house numbers like “13, 6” → “13-6”
-  address = address
-    .replace(/\s*,\s*(\d+[A-Za-z]?)\s*,\s*(\d+[A-Za-z]?)$/, " $1-$2")
-    .replace(/\s*,\s*(\d+[A-Za-z]?)$/, " $1")
-    .replace(/\s+,/g, ",")
-    .trim();
-
-  return {
-    city: last,
-    address,
-  };
+export interface CacheOptions<T> {
+	key: string;
+	durationMs?: number;
+	fetchFn: () => Promise<T>;
+	forceRefresh?: boolean;
 }
+
+export async function getCachedData<T>({
+	key,
+	durationMs = 4 * 60 * 60 * 1000,
+	fetchFn,
+	forceRefresh = false,
+}: CacheOptions<T>): Promise<T> {
+	try {
+		const cached = localStorage.getItem(key);
+
+		if (!forceRefresh && cached) {
+			const parsed = JSON.parse(cached);
+			const isFresh = Date.now() - parsed.timestamp < durationMs;
+
+			if (isFresh && parsed.data) {
+				return parsed.data as T;
+			}
+		}
+
+		const data = await fetchFn();
+
+		localStorage.setItem(
+			key,
+			JSON.stringify({
+				timestamp: Date.now(),
+				data,
+			})
+		);
+
+		return data;
+	} catch (err) {
+		console.error(`Error loading cached data for ${key}:`, err);
+		const fallback = localStorage.getItem(key);
+		if (fallback) {
+			try {
+				const parsed = JSON.parse(fallback);
+				return parsed.data as T;
+			} catch {
+				return {} as T;
+			}
+		}
+		throw err;
+	}
+}
+
+export function clearAllCaches() {
+	try {
+		localStorage.clear();
+		console.log('Cleared all localStorage caches');
+	} catch (err) {
+		console.error('Failed to clear all caches', err);
+	}
+}
+
+export const clearCollection = async (
+	db: Firestore,
+	collectionName: string
+) => {
+	const snapshot = await getDocs(collection(db, collectionName));
+	const deletePromises = snapshot.docs.map((d) => deleteDoc(d.ref));
+	await Promise.all(deletePromises);
+	console.log(`Cleared ${snapshot.size} docs from "${collectionName}".`);
+};
