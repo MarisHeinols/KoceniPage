@@ -1,299 +1,299 @@
 import {
-	Checkbox,
-	FormControl,
-	FormControlLabel,
-	FormGroup,
-	FormLabel,
-	InputLabel,
-	MenuItem,
-	Radio,
-	RadioGroup,
-	Select,
-	Stack,
-	Tab,
-	Tabs,
-	TextField,
-} from '@mui/material';
-import React, { useEffect } from 'react';
-import styles from './Form.module.css';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import type { UtilityMeeter } from '~/pages/utilityMeeterPage';
-import { isFormComplete } from './utils/utils';
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  InputLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
+} from "@mui/material";
+import React, { useEffect } from "react";
+import styles from "./Form.module.css";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
+import { isFormComplete } from "./utils/utils";
 
 interface FormProps {
-	utilityMeeter: UtilityMeeter;
-	setUtilityMeeter: (newUtilityMeeter: UtilityMeeter) => void;
-	setIsFormCompleted: (isFormValid: boolean) => void;
+  utilityMeeter: UtilityMeeter;
+  setUtilityMeeter: (newUtilityMeeter: UtilityMeeter) => void;
+  setIsFormCompleted: (isFormValid: boolean) => void;
 }
 
 const Form = ({
-	utilityMeeter,
-	setUtilityMeeter,
-	setIsFormCompleted,
+  utilityMeeter,
+  setUtilityMeeter,
+  setIsFormCompleted,
 }: FormProps) => {
-	const formData = utilityMeeter.details;
+  const formData = utilityMeeter.details;
 
-	const updateField = <K extends keyof UtilityMeeter['details']>(
-		field: K,
-		value: UtilityMeeter['details'][K]
-	) => {
-		setUtilityMeeter({
-			...utilityMeeter,
-			details: {
-				...utilityMeeter.details,
-				[field]: value,
-			},
-		});
-		if (isFormComplete(formData) && value !== '') {
-			setIsFormCompleted(true);
-		} else {
-			setIsFormCompleted(false);
-		}
-	};
+  const updateField = <K extends keyof UtilityMeeter["details"]>(
+    field: K,
+    value: UtilityMeeter["details"][K]
+  ) => {
+    setUtilityMeeter({
+      ...utilityMeeter,
+      details: {
+        ...utilityMeeter.details,
+        [field]: value,
+      },
+    });
+    if (isFormComplete(formData) && value !== "") {
+      setIsFormCompleted(true);
+    } else {
+      setIsFormCompleted(false);
+    }
+  };
 
-	const handleInstalledChange = (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
-		const { value, checked } = event.target;
-		const updatedInstalled = checked
-			? [...formData.installed, value]
-			: formData.installed.filter((item) => item !== value);
-		updateField('installed', updatedInstalled);
-	};
+  const handleInstalledChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value, checked } = event.target;
+    const updatedInstalled = checked
+      ? [...formData.installed, value]
+      : formData.installed.filter((item) => item !== value);
+    updateField("installed", updatedInstalled);
+  };
 
-	const options =
-		formData.action === 'Pārbaude'
-			? ['Ārpus kārtas pārbaude', 'Cits']
-			: ['Verifikācijas termiņa beigas', 'Cits'];
+  const options =
+    formData.action === "Pārbaude"
+      ? ["Ārpus kārtas pārbaude", "Cits"]
+      : ["Verifikācijas termiņa beigas", "Cits"];
 
-	useEffect(() => {
-		updateField('iemesls', options[0]);
-	}, [formData.action]);
+  useEffect(() => {
+    updateField("iemesls", options[0]);
+  }, [formData.action]);
 
-	return (
-		<div className={styles.formContentContainer}>
-			<h2 className={styles.headings}>
-				Skaitītāja nomaiņas/pārbaudes informācija
-			</h2>
-			<div className={styles.smallField}>
-				<Tabs
-					value={formData.action}
-					onChange={(_, newValue) => updateField('action', newValue)}
-					aria-label="basic tabs example"
-				>
-					<Tab value="Pārbaude" label="Pārbaude" />
-					<Tab value="Nomaiņa" label="Nomaiņa" />
-				</Tabs>
-			</div>
+  return (
+    <div className={styles.formContentContainer}>
+      <h2 className={styles.headings}>
+        Skaitītāja nomaiņas/pārbaudes informācija
+      </h2>
+      <div className={styles.smallField}>
+        <Tabs
+          value={formData.action}
+          onChange={(_, newValue) => updateField("action", newValue)}
+          aria-label="basic tabs example"
+        >
+          <Tab value="Pārbaude" label="Pārbaude" />
+          <Tab value="Nomaiņa" label="Nomaiņa" />
+        </Tabs>
+      </div>
 
-			<div className={styles.row}>
-				{/* LEFT SIDE */}
-				<div className={styles.rowEntry}>
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<TextField
-							label="Radijums"
-							variant="outlined"
-							type="number"
-							required
-							fullWidth
-							value={formData.radijums}
-							onChange={(e) => updateField('radijums', e.target.value)}
-						/>
-					</Stack>
+      <div className={styles.row}>
+        {/* LEFT SIDE */}
+        <div className={styles.rowEntry}>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              label="Radijums"
+              variant="outlined"
+              type="number"
+              required
+              fullWidth
+              value={formData.radijums}
+              onChange={(e) => updateField("radijums", e.target.value)}
+            />
+          </Stack>
 
-					<FormControl sx={{ width: '100%', mb: 2 }}>
-						<InputLabel id="reason">Iemesls</InputLabel>
-						<Select
-							labelId="reason"
-							label="Iemesls"
-							variant="outlined"
-							required
-							fullWidth
-							value={formData.iemesls}
-							onChange={(e) => updateField('iemesls', e.target.value)}
-						>
-							{options.map((opt) => (
-								<MenuItem key={opt} value={opt}>
-									{opt}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
+          <FormControl sx={{ width: "100%", mb: 2 }}>
+            <InputLabel id="reason">Iemesls</InputLabel>
+            <Select
+              labelId="reason"
+              label="Iemesls"
+              variant="outlined"
+              required
+              fullWidth
+              value={formData.iemesls}
+              onChange={(e) => updateField("iemesls", e.target.value)}
+            >
+              {options.map((opt) => (
+                <MenuItem key={opt} value={opt}>
+                  {opt}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-					<h2 className={styles.headings}>Detaļas:</h2>
+          <h2 className={styles.headings}>Detaļas:</h2>
 
-					{/* Novietojums */}
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<FormControl component="fieldset" sx={{ flex: 1 }} required>
-							<FormLabel component="legend">Novietojums</FormLabel>
-							<RadioGroup
-								row
-								value={formData.novietojums}
-								onChange={(e) => updateField('novietojums', e.target.value)}
-							>
-								<FormControlLabel
-									value="Horizontāli"
-									control={<Radio />}
-									label="Horizontāli"
-								/>
-								<FormControlLabel
-									value="Vertikāli"
-									control={<Radio />}
-									label="Vertikāli"
-								/>
-							</RadioGroup>
-						</FormControl>
-					</Stack>
+          {/* Novietojums */}
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <FormControl component="fieldset" sx={{ flex: 1 }} required>
+              <FormLabel component="legend">Novietojums</FormLabel>
+              <RadioGroup
+                row
+                value={formData.novietojums}
+                onChange={(e) => updateField("novietojums", e.target.value)}
+              >
+                <FormControlLabel
+                  value="Horizontāli"
+                  control={<Radio />}
+                  label="Horizontāli"
+                />
+                <FormControlLabel
+                  value="Vertikāli"
+                  control={<Radio />}
+                  label="Vertikāli"
+                />
+              </RadioGroup>
+            </FormControl>
+          </Stack>
 
-					{/* Atrodas */}
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<FormControl component="fieldset" sx={{ flex: 1 }} required>
-							<FormLabel component="legend">Atrodas</FormLabel>
-							<RadioGroup
-								row
-								value={formData.atrodas}
-								onChange={(e) => updateField('atrodas', e.target.value)}
-							>
-								<FormControlLabel value="Ēkā" control={<Radio />} label="Ēkā" />
-								<FormControlLabel value="Akā" control={<Radio />} label="Akā" />
-							</RadioGroup>
-						</FormControl>
-					</Stack>
+          {/* Atrodas */}
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <FormControl component="fieldset" sx={{ flex: 1 }} required>
+              <FormLabel component="legend">Atrodas</FormLabel>
+              <RadioGroup
+                row
+                value={formData.atrodas}
+                onChange={(e) => updateField("atrodas", e.target.value)}
+              >
+                <FormControlLabel value="Ēkā" control={<Radio />} label="Ēkā" />
+                <FormControlLabel value="Akā" control={<Radio />} label="Akā" />
+              </RadioGroup>
+            </FormControl>
+          </Stack>
 
-					{/* Uzstādīts */}
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<FormControl component="fieldset" sx={{ flex: 1 }} required>
-							<FormLabel component="legend">Uzstādīts</FormLabel>
-							<FormGroup row>
-								<FormControlLabel
-									control={
-										<Checkbox
-											checked={formData.installed.includes('Filtrs')}
-											onChange={handleInstalledChange}
-											value="Filtrs"
-										/>
-									}
-									label="Filtrs"
-								/>
-								<FormControlLabel
-									control={
-										<Checkbox
-											checked={formData.installed.includes('Pretvārsts')}
-											onChange={handleInstalledChange}
-											value="Pretvārsts"
-										/>
-									}
-									label="Pretvārsts"
-								/>
-							</FormGroup>
-						</FormControl>
-					</Stack>
+          {/* Uzstādīts */}
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <FormControl component="fieldset" sx={{ flex: 1 }} required>
+              <FormLabel component="legend">Uzstādīts</FormLabel>
+              <FormGroup row>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.installed.includes("Filtrs")}
+                      onChange={handleInstalledChange}
+                      value="Filtrs"
+                    />
+                  }
+                  label="Filtrs"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.installed.includes("Pretvārsts")}
+                      onChange={handleInstalledChange}
+                      value="Pretvārsts"
+                    />
+                  }
+                  label="Pretvārsts"
+                />
+              </FormGroup>
+            </FormControl>
+          </Stack>
 
-					{/* Tips */}
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<FormControl component="fieldset" sx={{ flex: 1 }} required>
-							<FormLabel component="legend">Tips</FormLabel>
-							<RadioGroup
-								row
-								value={formData.tips}
-								onChange={(e) => updateField('tips', e.target.value)}
-							>
-								<FormControlLabel
-									value="Mehāniskais"
-									control={<Radio />}
-									label="Mehāniskais"
-								/>
-								<FormControlLabel
-									value="Ultraskaņas"
-									control={<Radio />}
-									label="Ultraskaņas"
-								/>
-								<FormControlLabel
-									value="Impulsa"
-									control={<Radio />}
-									label="Impulsa"
-								/>
-								<FormControlLabel
-									value="Magnētiskais"
-									control={<Radio />}
-									label="Magnētiskais"
-								/>
-							</RadioGroup>
-						</FormControl>
-					</Stack>
-				</div>
+          {/* Tips */}
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <FormControl component="fieldset" sx={{ flex: 1 }} required>
+              <FormLabel component="legend">Tips</FormLabel>
+              <RadioGroup
+                row
+                value={formData.tips}
+                onChange={(e) => updateField("tips", e.target.value)}
+              >
+                <FormControlLabel
+                  value="Mehāniskais"
+                  control={<Radio />}
+                  label="Mehāniskais"
+                />
+                <FormControlLabel
+                  value="Ultraskaņas"
+                  control={<Radio />}
+                  label="Ultraskaņas"
+                />
+                <FormControlLabel
+                  value="Impulsa"
+                  control={<Radio />}
+                  label="Impulsa"
+                />
+                <FormControlLabel
+                  value="Magnētiskais"
+                  control={<Radio />}
+                  label="Magnētiskais"
+                />
+              </RadioGroup>
+            </FormControl>
+          </Stack>
+        </div>
 
-				{/* RIGHT SIDE */}
-				<div className={styles.rowEntry}>
-					{/* Other fields like Plomba Nr, Marka, Diametrs, Garums etc. */}
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<TextField
-							label="Plomba Nr"
-							required
-							variant="outlined"
-							fullWidth
-							value={formData.plombaNr}
-							onChange={(e) => updateField('plombaNr', e.target.value)}
-						/>
-						<TextField
-							label="Marka"
-							variant="outlined"
-							required
-							fullWidth
-							value={formData.marka}
-							onChange={(e) => updateField('marka', e.target.value)}
-						/>
-					</Stack>
+        {/* RIGHT SIDE */}
+        <div className={styles.rowEntry}>
+          {/* Other fields like Plomba Nr, Marka, Diametrs, Garums etc. */}
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              label="Plomba Nr"
+              required
+              variant="outlined"
+              fullWidth
+              value={formData.plombaNr}
+              onChange={(e) => updateField("plombaNr", e.target.value)}
+            />
+            <TextField
+              label="Marka"
+              variant="outlined"
+              required
+              fullWidth
+              value={formData.marka}
+              onChange={(e) => updateField("marka", e.target.value)}
+            />
+          </Stack>
 
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<TextField
-							label="Diametrs"
-							variant="outlined"
-							fullWidth
-							type="number"
-							required
-							value={formData.diametrs}
-							onChange={(e) => updateField('diametrs', e.target.value)}
-						/>
-						<TextField
-							label="Garums"
-							variant="outlined"
-							fullWidth
-							required
-							type="number"
-							value={formData.garums}
-							onChange={(e) => updateField('garums', e.target.value)}
-						/>
-					</Stack>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              label="Diametrs"
+              variant="outlined"
+              fullWidth
+              type="number"
+              required
+              value={formData.diametrs}
+              onChange={(e) => updateField("diametrs", e.target.value)}
+            />
+            <TextField
+              label="Garums"
+              variant="outlined"
+              fullWidth
+              required
+              type="number"
+              value={formData.garums}
+              onChange={(e) => updateField("garums", e.target.value)}
+            />
+          </Stack>
 
-					<LocalizationProvider dateAdapter={AdapterDateFns}>
-						<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-							<DatePicker
-								label="Verificēts līdz"
-								value={formData.verifiedTillDate}
-								onChange={(newValue) =>
-									updateField('verifiedTillDate', newValue)
-								}
-								slotProps={{ textField: { fullWidth: true } }}
-							/>
-						</Stack>
-					</LocalizationProvider>
-					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-						<TextField
-							label="Piezīmes"
-							variant="outlined"
-							multiline
-							minRows={6}
-							fullWidth
-							value={formData.piezimes}
-							onChange={(e) => updateField('piezimes', e.target.value)}
-						/>
-					</Stack>
-				</div>
-			</div>
-		</div>
-	);
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <DatePicker
+                label="Verificēts līdz"
+                value={formData.verifiedTillDate}
+                onChange={(newValue) =>
+                  updateField("verifiedTillDate", newValue)
+                }
+                slotProps={{ textField: { fullWidth: true } }}
+              />
+            </Stack>
+          </LocalizationProvider>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              label="Piezīmes"
+              variant="outlined"
+              multiline
+              minRows={6}
+              fullWidth
+              value={formData.piezimes}
+              onChange={(e) => updateField("piezimes", e.target.value)}
+            />
+          </Stack>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Form;

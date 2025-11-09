@@ -170,6 +170,10 @@ export const uploadUtilityMetersFromExcel = async (
 					worker: '',
 					date: lastMeasurementDate,
 				},
+				client: {
+					clientFullName: row['Ska.ObjSka.NĪO.NĪPLīg.NĪPLīg.Ab.Nosaukums']||"",
+					mobileNr: row['Ska.ObjSka.NĪO.NĪPLīg.NĪPLīg.Ab.Mobilais telefons']||""
+				}
 			};
 
 			const docRef = doc(db, 'utilityMeters', id);
