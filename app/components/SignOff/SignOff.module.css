@@ -1,6 +1,7 @@
 .signOffContainer {
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 100%;
     margin: 1rem;
     padding: 1rem;
@@ -9,8 +10,15 @@
     gap: 1rem;
 }
 
+.signOffEntryContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .signOffEntry {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 1rem;
 }

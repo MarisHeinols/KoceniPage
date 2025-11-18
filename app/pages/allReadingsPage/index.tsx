@@ -104,7 +104,7 @@ const AllReadingsPage = () => {
         cell: ({ row }) => (
           <IconButton
             color="primary"
-            onClick={async () => {
+            onClick={async (e) => {
               const fullEntry = allEntries.find(
                 (e) => e.id === row.original.id
               );
@@ -117,7 +117,7 @@ const AllReadingsPage = () => {
         ),
       },
     ],
-    []
+    [allEntries]
   );
 
   const table = useReactTable({

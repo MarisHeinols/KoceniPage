@@ -2,13 +2,33 @@ import { jsPDF } from 'jspdf';
 import type { UtilityMeeter } from "~/pages/utilityMeeterPage";
 import './Roboto-Regular-normal.js';
 
+export type FirestoreTimestamp = {
+  seconds: number;
+  nanoseconds: number;
+};
+
+
 export const generateFullPDF = (entry: UtilityMeeter) => {
-    console.log("generate pdf")
+const ts = entry.details?.verifiedTillDate as unknown as FirestoreTimestamp;
+
+const date = ts?.seconds
+  ? new Date(ts.seconds * 1000 + ts.nanoseconds / 1_000_000)
+  : null;
+
+const formattedDate = date
+  ? date.toLocaleString('lv-LV', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  : '';
+
   const doc = new jsPDF();
   doc.setFont('Roboto-Regular');
 
   const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
   const col1x = margin;
   const col2x = pageWidth / 2;
@@ -67,7 +87,7 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
     [`Atrodas: ${d.atrodas || ''}`, `Tips: ${d.tips || ''}`],
     [`Marka: ${d.marka || ''}`, `Diametrs: ${d.diametrs || ''}`],
     [`Garums: ${d.garums || ''}`, `Plombas Nr.: ${d.plombaNr || ''}`],
-    [`Piezīmes: ${d.piezimes || ''}`, `Pārbaudīts līdz: ${d.verifiedTillDate ? new Date(d.verifiedTillDate).toLocaleDateString() : ''}`]
+    [`Piezīmes: ${d.piezimes || ''}`, `Verifikācijas datums: ${formattedDate}`]
   ];
 
   for (const row of detailsRows) {
@@ -129,7 +149,7 @@ y += sigHeight + 10;
 
 // Date
 doc.text(
-  `Datums: ${entry.signiture?.date ? new Date(entry.signiture.date).toLocaleString() : ''}`,
+  `Datums: ${formattedDate}`,
   margin,
   y
 );

@@ -13,7 +13,6 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
   const [workerName, setWorkerName] = useState<string | null>(null);
   const clientSigRef = useRef<SignatureCanvas>(null);
   const workerSigRef = useRef<SignatureCanvas>(null);
-
   useEffect(() => {
     if (!workerName) {
       const respons = getUserCredentails();
@@ -46,40 +45,48 @@ const SignOff = ({ setSigniture }: SignOffProps) => {
   return (
     <div className={styles.signOffContainer}>
       <h2 className={styles.headings}>Apstiprinājums</h2>
+      <div className={styles.signOffEntryContainer}>
+        <div className={styles.signOffEntry}>
+          <h3>Apstiprinu (Klients):</h3>
+          <SignatureCanvas
+            ref={clientSigRef}
+            backgroundColor="white"
+            penColor="black"
+            canvasProps={{
+              width: 300,
+              height: 150,
+              className: styles.sigCanvas,
+            }}
+          />
+          <Button variant="outlined" onClick={clearClient} sx={{ mt: 1 }}>
+            Notīrīt
+          </Button>
+        </div>
 
-      <div className={styles.signOffEntry}>
-        <h3>Apstiprinu (Klients):</h3>
-        <SignatureCanvas
-          ref={clientSigRef}
-          backgroundColor="white"
-          penColor="black"
-          canvasProps={{ width: 400, height: 150, className: styles.sigCanvas }}
-        />
-        <Button variant="outlined" onClick={clearClient} sx={{ mt: 1 }}>
-          Notīrīt
-        </Button>
+        <div className={styles.signOffEntry}>
+          <h3>Darbinieks: {workerName}</h3>
+          <SignatureCanvas
+            ref={workerSigRef}
+            backgroundColor="white"
+            penColor="black"
+            canvasProps={{
+              width: 300,
+              height: 150,
+              className: styles.sigCanvas,
+            }}
+          />
+          <Button variant="outlined" onClick={clearWorker} sx={{ mt: 1 }}>
+            Notīrīt
+          </Button>
+        </div>
       </div>
-
-      <div className={styles.signOffEntry}>
-        <h3>Darbinieks: {workerName}</h3>
-        <SignatureCanvas
-          ref={workerSigRef}
-          backgroundColor="white"
-          penColor="black"
-          canvasProps={{ width: 400, height: 150, className: styles.sigCanvas }}
-        />
-        <Button variant="outlined" onClick={clearWorker} sx={{ mt: 1 }}>
-          Notīrīt
-        </Button>
-      </div>
-
       <Button
         variant="contained"
         color="primary"
         onClick={handleSave}
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, width: "20rem", alignSelf: "center" }}
       >
-        Saglabāt parakstu
+        Saglabāt parakstus
       </Button>
     </div>
   );
