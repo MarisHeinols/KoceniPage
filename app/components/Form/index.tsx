@@ -25,12 +25,14 @@ interface FormProps {
   utilityMeeter: UtilityMeeter;
   setUtilityMeeter: (newUtilityMeeter: UtilityMeeter) => void;
   setIsFormCompleted: (isFormValid: boolean) => void;
+  customTitle?: string;
 }
 
 const Form = ({
   utilityMeeter,
   setUtilityMeeter,
   setIsFormCompleted,
+  customTitle,
 }: FormProps) => {
   const formData = utilityMeeter.details;
 
@@ -74,7 +76,9 @@ const Form = ({
   return (
     <div className={styles.formContentContainer}>
       <h2 className={styles.headings}>
-        Skaitītāja nomaiņas/pārbaudes informācija
+        {customTitle
+          ? customTitle
+          : "Skaitītāja nomaiņas/pārbaudes informācija"}
       </h2>
       <div className={styles.smallField}>
         <Tabs

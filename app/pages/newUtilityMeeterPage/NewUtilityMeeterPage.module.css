@@ -1,0 +1,24 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.formContainer {
+    display: flex;
+    width: 100%;
+}
+
+.formContainerLeft {
+    display: flex;
+    width: 50%;
+}
+.formContainerRight {
+    display: flex;
+    width: 50%;
+}
