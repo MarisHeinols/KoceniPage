@@ -24,7 +24,7 @@ const NewMeeterForm = ({
   setIsFormCompleted,
   mapping,
 }: NewMeeterFormProps) => {
-  const cities = Object.keys(mapping);
+  const cities = Object.keys(mapping).sort();
 
   const updateUtilityMeeterValue = (path: string, value: any) => {
     setUtilityMeeter((prevState: UtilityMeeter): UtilityMeeter => {
@@ -91,7 +91,6 @@ const NewMeeterForm = ({
         <div className={styles.formContainerRight}>
           <FormControl sx={{ width: "100%", mb: 2 }}>
             <Grid container spacing={2}>
-              {" "}
               <InputLabel id="city">Ciems</InputLabel>
               <Select
                 labelId="city"

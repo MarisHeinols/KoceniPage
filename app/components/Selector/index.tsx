@@ -42,13 +42,13 @@ const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
   }, []);
 
   // Derived lists
-  const cities = Object.keys(mapping);
+  const cities = Object.keys(mapping).sort();
   const addresses = selectedCity
-    ? Object.keys(mapping[selectedCity] || {})
+    ? Object.keys(mapping[selectedCity] || {}).sort()
     : [];
   const meters =
     selectedCity && selectedAddress
-      ? mapping[selectedCity][selectedAddress] || []
+      ? mapping[selectedCity][selectedAddress].sort() || []
       : [];
 
   const handleCitySelect = (city: string) => {
