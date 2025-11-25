@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import styles from "./Modal.module.css";
 import { Button } from "@mui/material";
 

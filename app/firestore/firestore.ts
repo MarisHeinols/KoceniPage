@@ -1,14 +1,12 @@
 import { initializeApp } from 'firebase/app';
 import {
 	collection,
-	addDoc,
 	getFirestore,
 	doc,
 	setDoc,
 	getDoc,
 	Timestamp,
 	getDocs,
-	deleteDoc,
 	updateDoc,
 	arrayUnion,
 } from 'firebase/firestore';
@@ -18,10 +16,8 @@ import * as XLSX from 'xlsx';
 import {
 	clearCollection,
 	getCachedData,
-	parseAddress,
 	parseExcelSerialDate,
 	parseLatvianAddress,
-	parseLatvianDate,
 } from './utils/utils';
 
 export interface AddressMapping {

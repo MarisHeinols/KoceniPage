@@ -1,5 +1,4 @@
 import { collection, deleteDoc, Firestore, getDocs } from 'firebase/firestore';
-import * as XLSX from 'xlsx';
 
 export const parseAddress = (fullAddress: string) => {
 	const parts = fullAddress.split(',').map((p) => p.trim());
