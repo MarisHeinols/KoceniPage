@@ -1,19 +1,5 @@
 import { collection, deleteDoc, Firestore, getDocs } from 'firebase/firestore';
 
-export const parseAddress = (fullAddress: string) => {
-	const parts = fullAddress.split(',').map((p) => p.trim());
-
-	if (parts.length < 3) {
-		return { address: fullAddress, city: '' };
-	}
-
-	const address = parts.slice(0, 2).join(' ');
-
-	const city = parts[2];
-
-	return { address, city };
-};
-
 export const parseExcelSerialDate = (
 	serial: number | string | undefined
 ): Date | null => {
