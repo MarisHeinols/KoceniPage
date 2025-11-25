@@ -2,9 +2,9 @@ import { createTheme } from '@mui/material/styles';
 
 // Create a custom theme
 declare module '@mui/material/Button' {
-  interface ButtonPropsVariantOverrides {
-    nav: true; 
-  }
+	interface ButtonPropsVariantOverrides {
+		nav: true;
+	}
 }
 
 const theme = createTheme({
@@ -32,14 +32,14 @@ const theme = createTheme({
 		},
 	},
 	components: {
-		    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#ffffff',
-          boxShadow: '50px bottom black',
-        },
-      },
-    },
+		MuiAppBar: {
+			styleOverrides: {
+				root: {
+					backgroundColor: '#ffffff',
+					boxShadow: '50px bottom black',
+				},
+			},
+		},
 		MuiButton: {
 			styleOverrides: {
 				root: {
@@ -48,53 +48,53 @@ const theme = createTheme({
 				},
 				containedPrimary: {
 					backgroundColor: '#4caf50',
-					padding:'1rem',
+					padding: '1rem',
 					width: '100%',
-					height:'3rem',
-					fontSize:'1rem',
+					height: '3rem',
+					fontSize: '1rem',
 					color: '#fff',
 					'&:hover': {
 						backgroundColor: '#66ed6b',
-          			},
-        		},
-								outlinedPrimary: {
-					padding:'1rem',
+					},
+				},
+				outlinedPrimary: {
+					padding: '1rem',
 					width: '100%',
-					height:'3rem',
-					fontSize:'1rem',
-        		},
+					height: '3rem',
+					fontSize: '1rem',
+				},
 			},
-	 variants: [
-        {
-          props: { variant: 'nav' },
-          style: ({ theme }) => ({
-            textTransform: 'none',
-            fontWeight: 600,
-            color: theme.palette.common.black,
-            position: 'relative',
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              height: '2px',
-              width: '100%',
-              bottom: 0,
-              left: 0,
-              backgroundColor: theme.palette.primary.main,
-              transform: 'scaleX(0)',
-              transformOrigin: 'center',
-              transition: 'transform 0.3s ease',
-            },
-            '&:hover::after': {
-              transform: 'scaleX(1)',
-            },
-          }),
-        },
-      ],
+			variants: [
+				{
+					props: { variant: 'nav' },
+					style: ({ theme }) => ({
+						textTransform: 'none',
+						fontWeight: 600,
+						color: theme.palette.common.black,
+						position: 'relative',
+						'&::after': {
+							content: '""',
+							position: 'absolute',
+							height: '2px',
+							width: '100%',
+							bottom: 0,
+							left: 0,
+							backgroundColor: theme.palette.primary.main,
+							transform: 'scaleX(0)',
+							transformOrigin: 'center',
+							transition: 'transform 0.3s ease',
+						},
+						'&:hover::after': {
+							transform: 'scaleX(1)',
+						},
+					}),
+				},
+			],
 		},
 		MuiSelect: {
 			styleOverrides: {
 				root: {
-					height: '3rem',
+					height: '3.5rem',
 					width: '100%',
 					backgroundColor: 'none',
 					borderRadius: 8,

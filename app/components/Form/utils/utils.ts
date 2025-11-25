@@ -13,6 +13,7 @@ const requiredFields: (keyof UtilityMeeter['details'])[] = [
 	'diametrs',
 	'garums',
 	'verifiedTillDate',
+	'veids',
 ];
 
 export const isFormComplete = (formData: Details) => {

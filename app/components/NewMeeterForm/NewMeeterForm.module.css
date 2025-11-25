@@ -1,0 +1,22 @@
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    width: 98%;
+}
+
+.formUpperContainer {
+    display: flex;
+    width: 98%;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.formContainerLeft {
+    display: flex;
+    width: 48%;
+}
+
+.formContainerRight {
+    display: flex;
+    width: 48%;
+}

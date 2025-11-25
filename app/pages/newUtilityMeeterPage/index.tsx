@@ -1,155 +1,134 @@
-import React, { useEffect, useState } from "react";
-import Form from "~/components/Form";
-import type { UtilityMeeter } from "../utilityMeeterPage";
+import React, { useEffect, useState } from 'react';
+import Form from '~/components/Form';
+import type { UtilityMeeter } from '../utilityMeeterPage';
 import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
-import styles from "./NewUtilityMeeterPage.module.css";
-import { getAddressMapping } from "~/firestore/firestore";
+	Box,
+	Button,
+	CircularProgress,
+	FormControl,
+	Grid,
+	InputLabel,
+	MenuItem,
+	Select,
+	TextField,
+} from '@mui/material';
+import styles from './NewUtilityMeeterPage.module.css';
+import {
+	addCityAddressMappingWithRetry,
+	addNewEntryWithRetry,
+	getAddressMapping,
+} from '~/firestore/firestore';
+import Modal from '~/components/Modal';
+import NewMeeterForm from '~/components/NewMeeterForm';
+
+const newUtilityMeeter: UtilityMeeter = {
+	id: '',
+	adress: '',
+	city: '',
+	details: {
+		action: 'Pārbaude',
+		radijums: '',
+		iemesls: '',
+		novietojums: '',
+		atrodas: 'string',
+		installed: [],
+		tips: '',
+		plombaNr: '',
+		marka: '',
+		diametrs: '',
+		garums: '',
+		piezimes: '',
+		verifiedTillDate: null,
+		veids: '',
+	},
+	signiture: {
+		clientSigniture: '',
+		workerSigniture: '',
+		worker: '',
+		date: null,
+	},
+	client: { clientFullName: '', mobileNr: '' },
+};
 
 const NewUtilityMeeterPage = () => {
-  const [utilityMeeter, setUtilityMeeter] = useState<UtilityMeeter>({
-    id: "",
-    adress: "",
-    city: "",
-    details: {
-      action: "Pārbaude",
-      radijums: "",
-      iemesls: "",
-      novietojums: "",
-      atrodas: "string",
-      installed: [],
-      tips: "",
-      plombaNr: "",
-      marka: "",
-      diametrs: "",
-      garums: "",
-      piezimes: "",
-      verifiedTillDate: null,
-    },
-    signiture: {
-      clientSigniture: "",
-      workerSigniture: "",
-      worker: "",
-      date: null,
-    },
-    client: { clientFullName: "", mobileNr: "" },
-  });
-  const [formIsCompleted, setIsFormCompleted] = useState(false);
-  const [mapping, setMapping] = useState<
-    Record<string, Record<string, string[]>>
-  >({});
-  const [loading, setLoading] = useState(true);
+	const [utilityMeeter, setUtilityMeeter] =
+		useState<UtilityMeeter>(newUtilityMeeter);
+	const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
+	const [loading, setIsLoading] = useState(true);
+	const [formIsCompleted, setIsFormCompleted] = useState(false);
+	const [mapping, setMapping] = useState<
+		Record<string, Record<string, string[]>>
+	>({});
 
-  const updateUtilityMeeterValue = <K extends keyof UtilityMeeter>(
-    field: K,
-    value: UtilityMeeter[K]
-  ) => {
-    setUtilityMeeter({
-      ...utilityMeeter,
-      [field]: value,
-    });
-  };
-  const cities = Object.keys(mapping);
+	const handleUploadNewMeeter = async () => {
+		if (!utilityMeeter) return;
+		setIsLoading(true);
+		setUploadSuccess(null);
 
-  useEffect(() => {
-    const fetchMapping = async () => {
-      try {
-        const data = await getAddressMapping();
-        setMapping(data);
-      } catch (err) {
-        console.error("Error loading address mapping:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMapping();
-  }, []);
+		const success = await addNewEntryWithRetry(utilityMeeter);
+		const sucessAdressUpdagte = await addCityAddressMappingWithRetry(
+			utilityMeeter.city,
+			utilityMeeter.adress,
+			utilityMeeter.id
+		);
 
-  return (
-    <div className={styles.content}>
-      <div className={styles.formContainer}>
-        <div className={styles.formContainerLeft}>
-          <FormControl sx={{ width: "100%", mb: 2 }}>
-            <Grid container spacing={2}>
-              <TextField
-                label="ID"
-                variant="outlined"
-                required
-                fullWidth
-                value={utilityMeeter.id}
-                onChange={(e) =>
-                  updateUtilityMeeterValue(e.currentTarget.value)
-                }
-              />
+		setIsLoading(false);
+		setUploadSuccess(success && sucessAdressUpdagte);
+	};
 
-              <TextField
-                label="Klienta Vārds Uzvārds"
-                variant="outlined"
-                required
-                fullWidth
-                value={utilityMeeter.client.clientFullName}
-                onChange={(e) =>
-                  updateUtilityMeeterValue(e.currentTarget.value)
-                }
-              />
+	const closeModal = () => {
+		setIsLoading(false);
+		setUploadSuccess(null);
+		setUtilityMeeter(newUtilityMeeter);
+	};
 
-              <TextField
-                label="Klienta Tel nr"
-                variant="outlined"
-                required
-                fullWidth
-                value={utilityMeeter.client.mobileNr}
-                onChange={(e) =>
-                  updateUtilityMeeterValue(e.currentTarget.value)
-                }
-              />
-            </Grid>
-          </FormControl>
-        </div>
-        <div className={styles.formContainerRight}>
-          <FormControl sx={{ width: "100%", mb: 2 }}>
-            <Grid container spacing={2}>
-              {" "}
-              <InputLabel id="city">Ciems</InputLabel>
-              <Select
-                labelId="city"
-                value={utilityMeeter.city}
-                label="Ciems"
-                onChange={(e) => updateUtilityMeeterCity(e.target.value)}
-              >
-                {cities.map((city) => (
-                  <MenuItem key={city} value={city}>
-                    {city}
-                  </MenuItem>
-                ))}
-              </Select>
-              <TextField
-                label="Adrese"
-                variant="outlined"
-                required
-                fullWidth
-                value={utilityMeeter.client.mobileNr}
-                onChange={(e) => updateUtilityMeeterId(e.currentTarget.value)}
-              />
-            </Grid>
-          </FormControl>
-        </div>
-      </div>
+	useEffect(() => {
+		const fetchMapping = async () => {
+			try {
+				const data = await getAddressMapping();
+				setMapping(data);
+			} catch (err) {
+				console.error('Error loading address mapping:', err);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchMapping();
+	}, []);
 
-      <Form
-        utilityMeeter={utilityMeeter}
-        setUtilityMeeter={setUtilityMeeter}
-        setIsFormCompleted={setIsFormCompleted}
-        customTitle=" "
-      />
-    </div>
-  );
+	if (loading) {
+		return (
+			<Box p={4} display="flex" justifyContent="center">
+				<CircularProgress />
+			</Box>
+		);
+	}
+
+	return (
+		<div className={styles.content}>
+			<Modal isOpen={loading || uploadSuccess !== null} onClose={closeModal} />
+
+			<h1 className={styles.heading}>Jauns ieraksts</h1>
+			<NewMeeterForm
+				utilityMeeter={utilityMeeter}
+				setUtilityMeeter={setUtilityMeeter}
+				setIsFormCompleted={setIsFormCompleted}
+				mapping={mapping}
+			/>
+
+			<div className={styles.buttonContainer}>
+				<Button
+					disabled={formIsCompleted ? false : true}
+					variant="contained"
+					onClick={() => {
+						handleUploadNewMeeter();
+					}}
+				>
+					Iesniegt
+				</Button>
+			</div>
+		</div>
+	);
 };
 
 export default NewUtilityMeeterPage;

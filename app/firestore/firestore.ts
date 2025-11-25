@@ -9,6 +9,8 @@ import {
 	Timestamp,
 	getDocs,
 	deleteDoc,
+	updateDoc,
+	arrayUnion,
 } from 'firebase/firestore';
 import type { UtilityMeeter } from '~/pages/utilityMeeterPage';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -38,6 +40,12 @@ interface Mapping {
 	[city: string]: {
 		[address: string]: string[];
 	};
+}
+
+interface PendingMapping {
+	city: string;
+	address: string;
+	meterId: string;
 }
 
 const firebaseConfig = {
@@ -163,6 +171,7 @@ export const uploadUtilityMetersFromExcel = async (
 					garums: row['Lielums'] || '',
 					piezimes: '',
 					verifiedTillDate: verifyDate,
+					veids: '',
 				},
 				signiture: {
 					clientSigniture: '',
@@ -171,9 +180,11 @@ export const uploadUtilityMetersFromExcel = async (
 					date: lastMeasurementDate,
 				},
 				client: {
-					clientFullName: row['Ska.ObjSka.NĪO.NĪPLīg.NĪPLīg.Ab.Nosaukums']||"",
-					mobileNr: row['Ska.ObjSka.NĪO.NĪPLīg.NĪPLīg.Ab.Mobilais telefons']||""
-				}
+					clientFullName:
+						row['Ska.ObjSka.NĪO.NĪPLīg.NĪPLīg.Ab.Nosaukums'] || '',
+					mobileNr:
+						row['Ska.ObjSka.NĪO.NĪPLīg.NĪPLīg.Ab.Mobilais telefons'] || '',
+				},
 			};
 
 			const docRef = doc(db, 'utilityMeters', id);
@@ -235,6 +246,79 @@ export const getAddressMapping = async (): Promise<AddressMapping> => {
 		},
 	});
 };
+
+const savePendingMapping = (data: PendingMapping) => {
+	const pending = JSON.parse(localStorage.getItem('pendingMappings') || '[]');
+	pending.push(data);
+	localStorage.setItem('pendingMappings', JSON.stringify(pending));
+};
+
+export const addCityAddressMappingWithRetry = async (
+	city: string,
+	address: string,
+	meterId: string
+): Promise<boolean> => {
+	let attempt = 0;
+	const MAX_RETRIES = 3;
+	const RETRY_DELAY = 2000;
+
+	while (attempt < MAX_RETRIES) {
+		try {
+			const mappingDoc = doc(db, 'addresses', 'cityMapping');
+			const field = `${city}.${address}`;
+
+			// Add meter ID under addresses -> cityMapping -> city -> address
+			await updateDoc(mappingDoc, {
+				[field]: arrayUnion(meterId),
+			});
+
+			return true;
+		} catch (err) {
+			attempt++;
+			if (attempt < MAX_RETRIES) {
+				await new Promise((res) => setTimeout(res, RETRY_DELAY));
+			} else {
+				savePendingMapping({ city, address, meterId });
+				return false;
+			}
+		}
+	}
+
+	return false;
+};
+
+export const retryPendingMappings = async () => {
+	const pending: PendingMapping[] = JSON.parse(
+		localStorage.getItem('pendingMappings') || '[]'
+	);
+
+	if (!pending.length) return;
+
+	const successful: PendingMapping[] = [];
+
+	for (const item of pending) {
+		const ok = await addCityAddressMappingWithRetry(
+			item.city,
+			item.address,
+			item.meterId
+		);
+		if (ok) successful.push(item);
+	}
+
+	if (successful.length) {
+		const remaining = pending.filter(
+			(m) =>
+				!successful.some(
+					(s) =>
+						s.city === m.city &&
+						s.address === m.address &&
+						s.meterId === m.meterId
+				)
+		);
+		localStorage.setItem('pendingMappings', JSON.stringify(remaining));
+	}
+};
+
 export const getUtilityMeeterById = async (
 	id: string
 ): Promise<UtilityMeeter | null> => {
