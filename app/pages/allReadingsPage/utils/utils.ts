@@ -19,10 +19,6 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit',
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-				timeZone: 'Europe/Riga',
 			})
 		: '';
 
@@ -37,10 +33,6 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit',
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-				timeZone: 'Europe/Riga',
 			})
 		: '';
 
@@ -55,9 +47,14 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 
 	// --- Header ---
 	doc.setFontSize(16);
-	doc.text('Ūdens Skaitītāja Rādījuma Atskaites PDF', pageWidth / 2, y, {
-		align: 'center',
-	});
+	doc.text(
+		`Ūdens Skaitītāja ${entry.details.action == 'Pārbaude' ? 'pārbaudes' : 'nomaiņas'} akts Nr. ${entry.id || ''}`,
+		pageWidth / 2,
+		y,
+		{
+			align: 'center',
+		}
+	);
 	y += 12;
 
 	doc.setFontSize(12);
@@ -83,12 +80,8 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 	y += 6;
 
 	// --- Address Info ---
-	doc.setFontSize(14);
-	doc.text('Adrese', margin, y);
-	y += 8;
 	doc.setFontSize(12);
-	doc.text(`Pilsēta: ${entry.city || ''}`, col1x, y);
-	doc.text(`Adrese: ${entry.adress || ''}`, col2x, y);
+	doc.text(`${entry.city || ''} ${entry.adress || ''}`, col1x, y);
 	y += 10;
 
 	// Horizontal line
