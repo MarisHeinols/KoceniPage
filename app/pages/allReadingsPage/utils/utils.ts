@@ -14,7 +14,7 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 		? new Date(ts.seconds * 1000 + ts.nanoseconds / 1_000_000)
 		: null;
 
-	const formattedDate = date
+	const formatedVerifiedTillDate = date
 		? date.toLocaleString('lv-LV', {
 				year: 'numeric',
 				month: '2-digit',
@@ -28,7 +28,7 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 		? new Date(ts.seconds * 1000 + ts.nanoseconds / 1_000_000)
 		: null;
 
-	const formattedDateDocument = dateDocument
+	const formattedSignitureDate = dateDocument
 		? dateDocument.toLocaleString('lv-LV', {
 				year: 'numeric',
 				month: '2-digit',
@@ -101,7 +101,7 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 		[`Atrodas: ${d.atrodas || ''}`, `Tips: ${d.tips || ''}`],
 		[`Marka: ${d.marka || ''}`, `Diametrs: ${d.diametrs || ''}`],
 		[`Garums: ${d.garums || ''}`, `Plombas Nr.: ${d.plombaNr || ''}`],
-		[`Piezīmes: ${d.piezimes || ''}`, `Verifikācijas datums: ${formattedDate}`],
+		[`Piezīmes: ${d.piezimes || ''}`, `Verifikācijas datums: ${formatedVerifiedTillDate}`],
 	];
 
 	doc.text(`Veids: ${d.veids || ''}`, col1x, y);
@@ -168,7 +168,7 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 	y += sigHeight + 10;
 
 	// Date
-	doc.text(`Datums: ${formattedDateDocument}`, margin, y);
+	doc.text(`Datums: ${formattedSignitureDate}`, margin, y);
 
 	// --- Save PDF ---
 	doc.save(`reading_full_${entry.id}.pdf`);

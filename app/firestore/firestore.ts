@@ -348,9 +348,13 @@ export const getUserCredentails = () => {
 	const email = auth.currentUser?.email;
 	if (email) {
 		const emailNameSurname = email.split('@')[0];
-		const name = emailNameSurname.split('.')[0].toUpperCase();
+		if(emailNameSurname.includes('.')){
+					const name = emailNameSurname.split('.')[0].toUpperCase();
 		const surname = emailNameSurname.split('.')[1].toUpperCase();
 		return name + ' ' + surname;
+		}else{
+			return emailNameSurname
+		}
 	}
 };
 

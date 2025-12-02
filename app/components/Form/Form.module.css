@@ -31,6 +31,19 @@
   font-weight: bold;
 }
 
+.smallHeading {
+  font-size: 0.8;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 20rem;
+}
+
 @media (max-width: 760px) {
   .row {
     flex-direction: column;  
