@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import type { UtilityMeeter } from '~/pages/utilityMeeterPage';
+import type { OldMeeter, UtilityMeeter } from '~/pages/utilityMeeterPage';
 import './Roboto-Regular-normal.js';
 
 export type FirestoreTimestamp = {
@@ -8,14 +8,29 @@ export type FirestoreTimestamp = {
 };
 
 export const generateFullPDF = (entry: UtilityMeeter) => {
-	const ts = entry.details?.verifiedTillDate as unknown as FirestoreTimestamp;
+	const ts = entry.details?.verifiedOnDate as unknown as FirestoreTimestamp;
 
 	const date = ts?.seconds
 		? new Date(ts.seconds * 1000 + ts.nanoseconds / 1_000_000)
 		: null;
 
-	const formatedVerifiedTillDate = date
+	const formatedVerifiedOnDate = date
 		? date.toLocaleString('lv-LV', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+			})
+		: '';
+
+	const tsTill = entry.details
+		?.verifiedTillDate as unknown as FirestoreTimestamp;
+
+	const tillDate = tsTill?.seconds
+		? new Date(ts.seconds * 1000 + ts.nanoseconds / 1_000_000)
+		: null;
+
+	const formatedVerifiedTillDate = tillDate
+		? tillDate.toLocaleString('lv-LV', {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit',
@@ -87,30 +102,132 @@ export const generateFullPDF = (entry: UtilityMeeter) => {
 	// Horizontal line
 	doc.line(margin, y, pageWidth - margin, y);
 	y += 6;
+	let detailsRows: string[][] = [];
+	const d = entry || {};
 
-	// --- Details (two columns) ---
-	doc.setFontSize(14);
-	doc.text('Skaitītāja informācija', margin, y);
-	y += 8;
-	doc.setFontSize(12);
-
-	const d = entry.details || {};
-	const detailsRows = [
-		[`Darbība: ${d.action || ''}`, `Rādījums: ${d.radijums || ''}`],
-		[`Iemesls: ${d.iemesls || ''}`, `Novietojums: ${d.novietojums || ''}`],
-		[`Atrodas: ${d.atrodas || ''}`, `Tips: ${d.tips || ''}`],
-		[`Marka: ${d.marka || ''}`, `Diametrs: ${d.diametrs || ''}`],
-		[`Garums: ${d.garums || ''}`, `Plombas Nr.: ${d.plombaNr || ''}`],
-		[`Piezīmes: ${d.piezimes || ''}`, `Verifikācijas datums: ${formatedVerifiedTillDate}`],
-	];
-
-	doc.text(`Veids: ${d.veids || ''}`, col1x, y);
-	y += 8;
-	for (const row of detailsRows) {
-		doc.text(row[0], col1x, y);
-		doc.text(row[1], col2x, y);
+	if (entry.details.action == 'Pārbaude') {
+		// --- Details (two columns) ---
+		doc.setFontSize(14);
+		doc.text('Skaitītāja informācija', margin, y);
 		y += 8;
+		doc.setFontSize(12);
+
+		doc.text(`ID: ${d.id || ''}`, col1x, y);
+		y += 8;
+
+		detailsRows = [
+			[
+				`Darbība: ${d.details.action || ''}`,
+				`Rādījums: ${d.details.radijums || ''}`,
+			],
+			[
+				`Iemesls: ${d.details.iemesls || ''}`,
+				`Novietojums: ${d.details.novietojums || ''}`,
+			],
+			[`Atrodas: ${d.details.atrodas || ''}`, `Tips: ${d.details.tips || ''}`],
+			[
+				`Marka: ${d.details.marka || ''}`,
+				`Diametrs: ${d.details.diametrs || ''}`,
+			],
+			[
+				`Garums: ${d.details.garums || ''}`,
+				`Plombas Nr.: ${d.details.plombaNr || ''}`,
+			],
+			[
+				`Piezīmes: ${d.details.piezimes || ''}`,
+				`Veids: ${d.details.veids || ''}`,
+			],
+		];
+
+		for (const row of detailsRows) {
+			doc.text(row[0], col1x, y);
+			doc.text(row[1], col2x, y);
+			y += 8;
+		}
+	} else {
+		// --- Details (two columns) ---
+		if (entry.oldMeeter) {
+			const oldUtility: OldMeeter = entry.oldMeeter;
+			doc.setFontSize(14);
+			doc.text('Noņemtā Skaitītāja informācija', margin, y);
+			y += 8;
+			doc.setFontSize(12);
+			doc.text(`ID: ${oldUtility.id || ''}`, col1x, y);
+			y += 8;
+
+			detailsRows = [
+				[
+					`Darbība: ${oldUtility.details.action || ''}`,
+					`Rādījums: ${oldUtility.details.radijums || ''}`,
+				],
+				[
+					`Iemesls: ${oldUtility.details.iemesls || ''}`,
+					`Novietojums: ${oldUtility.details.novietojums || ''}`,
+				],
+				[
+					`Atrodas: ${oldUtility.details.atrodas || ''}`,
+					`Tips: ${oldUtility.details.tips || ''}`,
+				],
+				[
+					`Marka: ${oldUtility.details.marka || ''}`,
+					`Diametrs: ${oldUtility.details.diametrs || ''}`,
+				],
+				[
+					`Garums: ${oldUtility.details.garums || ''}`,
+					`Plombas Nr.: ${oldUtility.details.plombaNr || ''}`,
+				],
+				[
+					`Piezīmes: ${oldUtility.details.piezimes || ''}`,
+					`Veids: ${oldUtility.details.veids || ''}`,
+				],
+			];
+
+			for (const row of detailsRows) {
+				doc.text(row[0], col1x, y);
+				doc.text(row[1], col2x, y);
+				y += 8;
+			}
+		}
+		doc.setFontSize(14);
+		doc.text('Jaunā Skaitītāja informācija', margin, y);
+		y += 8;
+		doc.setFontSize(12);
+		doc.text(`ID: ${d.id || ''}`, col1x, y);
+		y += 8;
+
+		detailsRows = [
+			[
+				`Darbība: ${d.details.action || ''}`,
+				`Rādījums: ${d.details.radijums || ''}`,
+			],
+			[
+				`Iemesls: ${d.details.iemesls || ''}`,
+				`Novietojums: ${d.details.novietojums || ''}`,
+			],
+			[`Atrodas: ${d.details.atrodas || ''}`, `Tips: ${d.details.tips || ''}`],
+			[
+				`Marka: ${d.details.marka || ''}`,
+				`Diametrs: ${d.details.diametrs || ''}`,
+			],
+			[
+				`Garums: ${d.details.garums || ''}`,
+				`Plombas Nr.: ${d.details.plombaNr || ''}`,
+			],
+			[
+				`Piezīmes: ${d.details.piezimes || ''}`,
+				`Veids: ${d.details.veids || ''}`,
+			],
+		];
+
+		for (const row of detailsRows) {
+			doc.text(row[0], col1x, y);
+			doc.text(row[1], col2x, y);
+			y += 8;
+		}
 	}
+
+	doc.text(`Verificēts līdz:: ${formatedVerifiedTillDate}`, col1x, y);
+	y += 8;
 
 	// Horizontal line
 	doc.line(margin, y, pageWidth - margin, y);
