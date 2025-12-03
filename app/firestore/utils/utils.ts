@@ -1,4 +1,4 @@
-import { collection, deleteDoc, Firestore, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, Firestore, getDocs, Timestamp } from 'firebase/firestore';
 
 export const parseExcelSerialDate = (
 	serial: number | string | undefined
@@ -126,4 +126,22 @@ export const clearCollection = async (
 	const deletePromises = snapshot.docs.map((d) => deleteDoc(d.ref));
 	await Promise.all(deletePromises);
 	console.log(`Cleared ${snapshot.size} docs from "${collectionName}".`);
+};
+
+export const toJsDate = (
+  value: Date | Timestamp | null | undefined
+): Date | null => {
+  if (!value) return null;
+
+  // Firestore Timestamp
+  if (typeof (value as Timestamp).toDate === "function") {
+    return (value as Timestamp).toDate();
+  }
+
+  // Already JS Date
+  if (value instanceof Date) {
+    return value;
+  }
+
+  return null;
 };

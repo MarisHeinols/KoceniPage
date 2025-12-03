@@ -9,11 +9,13 @@ import {
 	getDocs,
 	updateDoc,
 	arrayUnion,
+	deleteDoc,
 } from 'firebase/firestore';
 import type { UtilityMeeter } from '~/pages/utilityMeeterPage';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import * as XLSX from 'xlsx';
 import {
+	clearAllCaches,
 	clearCollection,
 	getCachedData,
 	parseExcelSerialDate,
@@ -25,6 +27,7 @@ export interface AddressMapping {
 		[address: string]: string[];
 	};
 }
+
 
 interface UploadResult {
 	errors: { row: number; message: string }[];
@@ -60,30 +63,91 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 export const auth = getAuth(app);
 
+const CITY_MAPPING_DOC = doc(db, "addresses", "cityMapping");
+
 export const addNewEntryWithRetry = async (
-	utilityMeeter: UtilityMeeter
+  utilityMeeter: UtilityMeeter
 ): Promise<boolean> => {
-	let attempt = 0;
-	const MAX_RETRIES = 3;
-	const RETRY_DELAY = 2000;
+  let attempt = 0;
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000;
 
-	while (attempt < MAX_RETRIES) {
-		try {
-			const docRef = doc(db, 'utilityMeters', utilityMeeter.id);
-			await setDoc(docRef, utilityMeeter);
-			return true;
-		} catch (err) {
-			attempt++;
-			if (attempt < MAX_RETRIES) {
-				await new Promise((res) => setTimeout(res, RETRY_DELAY));
-			} else {
-				saveEntryForLater(utilityMeeter);
-				return false;
-			}
-		}
-	}
+  while (attempt < MAX_RETRIES) {
+    try {
+      // 1) WRITE NEW / UPDATED METER (always by current id)
+      const newDocRef = doc(db, "utilityMeters", utilityMeeter.id);
+      await setDoc(newDocRef, utilityMeeter);
 
-	return false;
+      // 2) If this is a replacement (Nomaiņa), clean up old meter + mapping
+      if (
+        utilityMeeter.details.action === "Nomaiņa" &&
+        utilityMeeter.oldMeeter &&
+        utilityMeeter.oldMeeter.id !== utilityMeeter.id
+      ) {
+		await clearAllCaches()
+        await replaceMeterInMappingAndDeleteOldDoc(utilityMeeter);
+      }
+
+      return true;
+    } catch (err) {
+      console.error("addNewEntryWithRetry error:", err);
+      attempt++;
+      if (attempt < MAX_RETRIES) {
+        await new Promise((res) => setTimeout(res, RETRY_DELAY));
+      } else {
+        saveEntryForLater(utilityMeeter);
+        return false;
+      }
+    }
+  }
+
+  return false;
+};
+
+const replaceMeterInMappingAndDeleteOldDoc = async (
+  utilityMeeter: UtilityMeeter
+) => {
+  const oldId = utilityMeeter.oldMeeter!.id;
+  const newId = utilityMeeter.id;
+
+  // 1) Delete old meter document
+  const oldDocRef = doc(db, "utilityMeters", oldId);
+  await deleteDoc(oldDocRef);
+
+  // 2) Update address mapping
+  // We assume same city/address for old & new meter.
+  const rawCityOrAddress = utilityMeeter.city;
+  const rawAddressOrEmpty = utilityMeeter.adress;
+
+  const fullAddress =
+    rawAddressOrEmpty && rawCityOrAddress
+      ? `${rawAddressOrEmpty}, ${rawCityOrAddress}`
+      : rawCityOrAddress;
+
+  const { city, address } = parseLatvianAddress(fullAddress);
+
+  if (!city || !address) {
+    console.warn("Could not parse address for mapping update:", fullAddress);
+    return;
+  }
+
+  const mappingSnap = await getDoc(CITY_MAPPING_DOC);
+  const mapping: Mapping = mappingSnap.exists()
+    ? (mappingSnap.data() as Mapping)
+    : {};
+
+  if (!mapping[city]) mapping[city] = {};
+  if (!mapping[city][address]) mapping[city][address] = [];
+
+  // Remove old id
+  mapping[city][address] = mapping[city][address].filter((id) => id !== oldId);
+
+  // Add new id if not present
+  if (!mapping[city][address].includes(newId)) {
+    mapping[city][address].push(newId);
+  }
+
+  await setDoc(CITY_MAPPING_DOC, mapping);
 };
 
 const saveEntryForLater = (entry: UtilityMeeter) => {

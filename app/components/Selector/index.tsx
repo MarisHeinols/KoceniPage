@@ -68,7 +68,15 @@ const Selector = ({ setUtilityMeeter, utilityMeeter }: SelectorProps) => {
     setSelectedMeter(meterId);
     const meterData = await getUtilityMeeterById(meterId);
     if (meterData) {
-      setUtilityMeeter(meterData);
+      setUtilityMeeter({
+        ...meterData,
+        details: {
+          ...meterData.details,
+          action: "Pārbaude",
+        },
+        oldMeeter: undefined,
+        checkDetails: undefined,
+      });
     }
   };
 
